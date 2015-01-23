@@ -8,39 +8,20 @@ namespace WPFExperiment.BindingGenerators
 {
     internal static class BindingGenerator
     {
-        public static IBindingSpec<T,U> Path<T, U>(Expression<Func<T, U>> func)
+        public static IBindingSpec<From,To> Path<From, To>(Expression<Func<From, To>> func)
         {
-            var elements = GetPathElements(func.Body);
-            return new PathBinding<T, U>(elements.ToList());
+            return new PathBinding<From, To>(func);
         }
 
-        public static IBindingSpec<T, U> Convert<T, U>(Func<T, U> func)
+        public static IBindingSpec<From, To> Convert<From, To>(Func<From, To> func)
         {
-            return Root<T>().Convert(func);
+            return Root<From>().Convert(func);
         } 
 
-        public static IBindingSpec<T,T> Root<T>()
+        public static IBindingSpec<From,From> Root<From>()
         {
-            return Path((T x) => x);
+            return Path((From x) => x);
         }
 
-        private static IEnumerable<IPathElement> GetPathElements(Expression expression)
-        {
-            var memberExpression = expression as MemberExpression;
-            if (memberExpression != null)
-            {
-                var propertyInfo = memberExpression.Member as PropertyInfo;
-                if (propertyInfo == null)
-                    throw new ArgumentException("access must be a property");
-                return GetPathElements(memberExpression.Expression).Concat(new[] {new PropertyAccess(propertyInfo)});
-            }
-
-            var parameterExpression = expression as ParameterExpression;
-            if (parameterExpression != null)
-            {
-                return new[] {new Parameter(parameterExpression)};
-            }
-            throw new ArgumentException();
-        }
     }
 }
