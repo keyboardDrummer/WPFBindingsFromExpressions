@@ -71,6 +71,7 @@
     <Compile Include="BindingGenerators\PathBinding.cs" />
     <Compile Include="BindingGenerators\PropertyAccess.cs" />
     <Compile Include="DelegateConverter.cs" />
+    <Compile Include="Item.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

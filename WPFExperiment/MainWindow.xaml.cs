@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using WPFExperiment.Annotations;
 using WPFExperiment.BindingGenerators;
 
 namespace WPFExperiment
@@ -12,7 +9,7 @@ namespace WPFExperiment
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public MainWindow()
         {
@@ -79,31 +76,6 @@ namespace WPFExperiment
         public bool IsNotChecked(Item item)
         {
             return !item.IsChecked;
-        }
-    }
-
-    public class Item : INotifyPropertyChanged
-    {
-        bool isChecked;
-
-        public Item(bool isChecked)
-        {
-            this.isChecked = isChecked;
-        }
-
-        public bool IsChecked
-        {
-            get { return isChecked; }
-            set { isChecked = value; OnPropertyChanged();}
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
