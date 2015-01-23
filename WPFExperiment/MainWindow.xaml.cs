@@ -16,11 +16,14 @@ namespace WPFExperiment
             InitializeComponent();
             var firstItem = new Item(true);
             var items = new List<Item> {firstItem, new Item(false), new Item(true)};
+            firstItem.ChildItem = new Item(true);
             AddIsCheckedColumn();
             AddConstantColumns();
             AddOneTimeAlwaysCheckedColumn();
             AddIsNotCheckedOneWayColumn();
             AddIsNotCheckedTwoWayColumn();
+            AddChildIsCheckedTwoWayColumn();
+            AddChildIsNotCheckedTwoWayColumn();
             SuperGrid.ItemsSource = items;
         }
 
@@ -47,29 +50,44 @@ namespace WPFExperiment
 
         private void AddIsNotCheckedTwoWayColumn()
         {
-            var isCheckedColumn = new DataGridCheckBoxColumn();
             var binding = BindingGenerator.Path((Item item) => item.IsChecked).Convert(b => !b, b => !b).ToBinding();
             binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-            isCheckedColumn.Binding = binding;
-            isCheckedColumn.Header = "Not checked writable";
-            SuperGrid.Columns.Add(isCheckedColumn);
+            var header = "Not checked writable";
+            AddColumn(binding, header);
         }
 
         private void AddOneTimeAlwaysCheckedColumn()
         {
-            var isCheckedColumn = new DataGridCheckBoxColumn();
-            isCheckedColumn.Binding = BindingGenerator.Root<Item>().Convert(IsNotChecked).ToBinding();
-            isCheckedColumn.Header = "Not checked (one time)";
-            SuperGrid.Columns.Add(isCheckedColumn);
+            var binding = BindingGenerator.Root<Item>().Convert(IsNotChecked).ToBinding();
+            AddColumn(binding, "Not checked (one time)");
         }
 
         private void AddIsCheckedColumn()
         {
-            var isCheckedColumn = new DataGridCheckBoxColumn();
             var binding = BindingGenerator.Path((Item item) => item.IsChecked).ToBinding();
-            isCheckedColumn.Binding = binding;
             binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-            isCheckedColumn.Header = "Is checked";
+            AddColumn(binding, "Is checked");
+        }
+
+        private void AddChildIsCheckedTwoWayColumn()
+        {
+            var binding = BindingGenerator.Path((Item item) => item.ChildItem.IsChecked).ToBinding();
+            binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            AddColumn(binding, "Is child checked");
+        }
+
+        private void AddChildIsNotCheckedTwoWayColumn()
+        {
+            var binding = BindingGenerator.Path((Item item) => item.ChildItem.IsChecked).Convert(b => !b, b => !b).ToBinding();
+            binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            AddColumn(binding, "Is child not checked");
+        }
+
+        private void AddColumn(Binding binding, string header)
+        {
+            var isCheckedColumn = new DataGridCheckBoxColumn();
+            isCheckedColumn.Binding = binding;
+            isCheckedColumn.Header = header;
             SuperGrid.Columns.Add(isCheckedColumn);
         }
 

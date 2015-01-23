@@ -1,11 +1,15 @@
 ﻿<Window x:Class="WPFExperiment.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525" SizeToContent="WidthAndHeight">
     <StackPanel Name="RootPanel" Orientation="Vertical">
-    <Grid>
-        <DataGrid x:Name="SuperGrid" Margin="0" RenderTransformOrigin="-3.333,-3.769" AutoGenerateColumns="False"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="114*"/>
+                <ColumnDefinition Width="403*"/>
+            </Grid.ColumnDefinitions>
+            <DataGrid x:Name="SuperGrid" Margin="0" RenderTransformOrigin="-3.333,-3.769" AutoGenerateColumns="False" Grid.ColumnSpan="2"/>
 
-    </Grid>
+        </Grid>
     </StackPanel>
 </Window>

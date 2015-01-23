@@ -7,6 +7,7 @@ namespace WPFExperiment
     public class Item : INotifyPropertyChanged
     {
         bool isChecked;
+        private Item childItem;
 
         public Item(bool isChecked)
         {
@@ -17,6 +18,17 @@ namespace WPFExperiment
         {
             get { return isChecked; }
             set { isChecked = value; OnPropertyChanged();}
+        }
+
+        public Item ChildItem
+        {
+            get { return childItem; }
+            set 
+            { 
+                childItem = value;
+                childItem.PropertyChanged += PropertyChanged;
+                OnPropertyChanged();
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
