@@ -5,7 +5,7 @@ using Xunit;
 
 namespace WPFExperimentTests.BindingGenerators
 {
-	public class BindingGeneratorTests
+	public class ComponentTests
 	{
 		[Fact]
 		public void SinglePathNoConverter()
