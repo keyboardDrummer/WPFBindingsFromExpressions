@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 
-namespace WPFBindingGeneration.Bindings.Converters
+namespace WPFBindingGeneration.ExpressionBindings.Converters
 {
 	class MultiValueConverterFromDelegate<To> : IMultiValueConverter
 	{

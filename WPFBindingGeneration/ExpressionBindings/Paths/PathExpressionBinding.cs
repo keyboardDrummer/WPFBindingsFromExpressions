@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows.Data;
 
-namespace WPFBindingGeneration.Bindings.Paths
+namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
 	public class PathExpressionBinding<From, To> : DefaultExpressionBinding<From, To>
 	{

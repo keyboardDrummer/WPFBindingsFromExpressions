@@ -1,4 +1,4 @@
-﻿namespace WPFBindingGeneration.Bindings.Paths
+﻿namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
 	public interface IPathElement
     {

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace WPFBindingGeneration.Bindings.Converters
+namespace WPFBindingGeneration.ExpressionBindings.Converters
 {
 	class ValueConverterFromDelegate<T, U> : IValueConverter
 	{

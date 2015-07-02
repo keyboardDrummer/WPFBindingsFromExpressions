@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace WPFBindingGeneration.Bindings.Paths
+namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
     class PropertyAccess : IPathElement
     {

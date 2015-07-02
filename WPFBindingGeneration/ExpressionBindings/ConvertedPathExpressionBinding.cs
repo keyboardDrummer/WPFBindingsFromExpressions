@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Data;
-using WPFBindingGeneration.Bindings.Converters;
-using WPFBindingGeneration.Bindings.Paths;
+using WPFBindingGeneration.ExpressionBindings.Converters;
+using WPFBindingGeneration.ExpressionBindings.Paths;
 
-namespace WPFBindingGeneration.Bindings
+namespace WPFBindingGeneration.ExpressionBindings
 {
 	public class ConvertedPathExpressionBinding<From, OldTo, To> : DefaultExpressionBinding<From, To>
 	{

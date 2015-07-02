@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Windows.Data;
-using WPFBindingGeneration.Bindings.Converters;
-using WPFBindingGeneration.Bindings.Paths;
+using WPFBindingGeneration.ExpressionBindings.Converters;
+using WPFBindingGeneration.ExpressionBindings.Paths;
 
-namespace WPFBindingGeneration.Bindings
+namespace WPFBindingGeneration.ExpressionBindings
 {
 	class MultiPathExpressionBinding<From, To> : DefaultExpressionBinding<From, To>
 	{

@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace WPFBindingGeneration.Bindings.Paths
+namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
     class Parameter : IPathElement
     {
