@@ -1,6 +1,6 @@
 ﻿namespace WPFExperiment.BindingGenerators
 {
-    interface IPathElement
+	public interface IPathElement
     {
         bool Writable { get; }
     }
