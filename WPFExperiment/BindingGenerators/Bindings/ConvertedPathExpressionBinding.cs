@@ -3,7 +3,7 @@ using System.Windows.Data;
 
 namespace WPFExperiment.BindingGenerators.Bindings
 {
-	public class ConvertedPathExpressionBinding<From, OldTo, To> : DefaultExpressionBinding
+	public class ConvertedPathExpressionBinding<From, OldTo, To> : DefaultExpressionBinding<From, To>
 	{
 		readonly Func<To, OldTo> backward;
 		readonly Func<OldTo, To> forward;
@@ -19,6 +19,11 @@ namespace WPFExperiment.BindingGenerators.Bindings
 		public override bool IsWritable
 		{
 			get { return pathExpression.IsWritable && backward != null; }
+		}
+
+		public override To Evaluate(From @from)
+		{
+			return forward(pathExpression.Evaluate(from));
 		}
 
 		public override BindingBase ToBindingBase()

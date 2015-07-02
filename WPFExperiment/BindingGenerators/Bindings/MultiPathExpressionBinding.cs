@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Windows.Data;
 
 namespace WPFExperiment.BindingGenerators
 {
-	class MultiPathExpressionBinding<From, To> : DefaultExpressionBinding
+	class MultiPathExpressionBinding<From, To> : DefaultExpressionBinding<From, To>
 	{
 		readonly Func<object[], To> converter;
 		readonly IList<LambdaExpression> paths;
@@ -19,6 +20,12 @@ namespace WPFExperiment.BindingGenerators
 		public override bool IsWritable
 		{
 			get { return false; }
+		}
+
+		public override To Evaluate(From @from)
+		{
+			var pathValues = paths.Select(path => path.Compile().DynamicInvoke(from));
+			return converter(pathValues.ToArray());
 		}
 
 		public override BindingBase ToBindingBase()

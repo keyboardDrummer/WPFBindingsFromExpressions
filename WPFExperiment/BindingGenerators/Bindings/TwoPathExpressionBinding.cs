@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 namespace WPFExperiment.BindingGenerators
 {
-	class TwoPathExpressionBinding<From, First, Second, To> : DefaultExpressionBinding
+	class TwoPathExpressionBinding<From, First, Second, To> : DefaultExpressionBinding<From, To>
 	{
 		readonly Func<First, Second, To> converter;
 		readonly Expression<Func<From, First>> first;
@@ -20,6 +20,11 @@ namespace WPFExperiment.BindingGenerators
 		public override bool IsWritable
 		{
 			get { return false; }
+		}
+
+		public override To Evaluate(From @from)
+		{
+			return converter(first.Compile()(from), second.Compile()(from));
 		}
 
 		public override BindingBase ToBindingBase()

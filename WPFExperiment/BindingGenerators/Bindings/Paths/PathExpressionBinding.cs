@@ -8,7 +8,7 @@ using WPFExperiment.BindingGenerators.Bindings;
 
 namespace WPFExperiment.BindingGenerators
 {
-	public class PathExpressionBinding<From, To> : DefaultExpressionBinding
+	public class PathExpressionBinding<From, To> : DefaultExpressionBinding<From, To>
 	{
 		readonly LambdaExpression func;
 
@@ -20,6 +20,11 @@ namespace WPFExperiment.BindingGenerators
 		public override bool IsWritable
 		{
 			get { return GetElements().Last().Writable; }
+		}
+
+		public override To Evaluate(From @from)
+		{
+			return (To) func.Compile().DynamicInvoke(from);
 		}
 
 		static IEnumerable<IPathElement> GetPathElements(Expression expression)
