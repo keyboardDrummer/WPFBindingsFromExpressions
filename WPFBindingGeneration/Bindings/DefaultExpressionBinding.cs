@@ -1,6 +1,6 @@
 ﻿using System.Windows.Data;
 
-namespace WPFExperiment.BindingGenerators
+namespace WPFBindingGeneration.Bindings
 {
 	public abstract class DefaultExpressionBinding<From, To> : IExpressionBinding<From, To>
 	{

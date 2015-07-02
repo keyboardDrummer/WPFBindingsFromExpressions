@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Windows.Data;
+using WPFBindingGeneration.Bindings.Converters;
+using WPFBindingGeneration.Bindings.Paths;
 
-namespace WPFExperiment.BindingGenerators
+namespace WPFBindingGeneration.Bindings
 {
 	class TwoPathExpressionBinding<From, First, Second, To> : DefaultExpressionBinding<From, To>
 	{

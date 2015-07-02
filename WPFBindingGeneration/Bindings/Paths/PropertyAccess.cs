@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace WPFExperiment.BindingGenerators
+namespace WPFBindingGeneration.Bindings.Paths
 {
     class PropertyAccess : IPathElement
     {

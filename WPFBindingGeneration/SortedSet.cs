@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace WPFExperiment.BindingGenerators
+namespace WPFBindingGeneration
 {
 	class SortedSet<T> : IReadOnlyList<T>
 	{

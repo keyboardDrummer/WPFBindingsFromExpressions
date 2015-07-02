@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using WPFExperiment.Properties;
 
-namespace WPFExperiment
+namespace WPFExperimentTests
 {
 	public class Item : INotifyPropertyChanged
 	{

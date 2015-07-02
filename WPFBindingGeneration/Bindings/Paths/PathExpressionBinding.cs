@@ -4,9 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows.Data;
-using WPFExperiment.BindingGenerators.Bindings;
 
-namespace WPFExperiment.BindingGenerators
+namespace WPFBindingGeneration.Bindings.Paths
 {
 	public class PathExpressionBinding<From, To> : DefaultExpressionBinding<From, To>
 	{

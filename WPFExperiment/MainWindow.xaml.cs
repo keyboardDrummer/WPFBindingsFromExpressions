@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Data;
-using WPFExperiment.BindingGenerators;
+using WPFBindingGeneration;
 
 namespace WPFExperiment
 {

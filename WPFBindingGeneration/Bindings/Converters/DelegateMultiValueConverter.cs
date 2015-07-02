@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace WPFExperiment.BindingGenerators
+namespace WPFBindingGeneration.Bindings.Converters
 {
 	class TransformedMultiValueConverter<From, To> : IMultiValueConverter
 	{

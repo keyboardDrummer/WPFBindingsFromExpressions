@@ -1,4 +1,4 @@
-﻿namespace WPFExperiment.BindingGenerators
+﻿namespace WPFBindingGeneration.Bindings.Paths
 {
 	public interface IPathElement
     {

@@ -1,6 +1,5 @@
 ﻿using System.Windows.Data;
-using WPFExperiment;
-using WPFExperiment.BindingGenerators;
+using WPFBindingGeneration;
 using Xunit;
 
 namespace WPFExperimentTests.BindingGenerators

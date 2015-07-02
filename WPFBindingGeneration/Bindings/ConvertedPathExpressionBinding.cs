@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows.Data;
+using WPFBindingGeneration.Bindings.Paths;
 
-namespace WPFExperiment.BindingGenerators.Bindings
+namespace WPFBindingGeneration.Bindings
 {
 	public class ConvertedPathExpressionBinding<From, OldTo, To> : DefaultExpressionBinding<From, To>
 	{

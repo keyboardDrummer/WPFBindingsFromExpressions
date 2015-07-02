@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace WPFExperiment.BindingGenerators
+namespace WPFBindingGeneration.Bindings.Paths
 {
     class Parameter : IPathElement
     {

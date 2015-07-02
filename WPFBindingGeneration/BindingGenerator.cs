@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using WPFBindingGeneration.Bindings;
+using WPFBindingGeneration.Bindings.Paths;
 
-namespace WPFExperiment.BindingGenerators
+namespace WPFBindingGeneration
 {
 	public static class BindingGenerator
 	{
-		public static IExpressionBinding TwoWay<From, To>(Expression<Func<From, To>> func)
+		public static IExpressionBinding<From, To> TwoWay<From, To>(Expression<Func<From, To>> func)
 		{
 			var oneWay = OneWay(func);
 			if (!oneWay.IsWritable)
@@ -14,7 +16,7 @@ namespace WPFExperiment.BindingGenerators
 			return oneWay;
 		}
 
-		public static IExpressionBinding OneWay<From, To>(Expression<Func<From, To>> func)
+		public static IExpressionBinding<From, To> OneWay<From, To>(Expression<Func<From, To>> func)
 		{
 			var paths = new SortedSet<Expression>();
 			var guid = Guid.NewGuid();
@@ -100,7 +102,7 @@ namespace WPFExperiment.BindingGenerators
 			return new PathExpressionBinding<From, To>(func);
 		}
 
-		public static IExpressionBinding Convert<From, To>(Func<From, To> func)
+		public static IExpressionBinding<From, To> Convert<From, To>(Func<From, To> func)
 		{
 			return Root<From>().Convert(func);
 		}

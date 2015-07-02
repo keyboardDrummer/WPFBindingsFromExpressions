@@ -55,15 +55,20 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BindingGenerators\ComponentTests.cs" />
+    <Compile Include="Item.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WPFExperiment\WPFExperiment.csproj">
+    <ProjectReference Include="..\WPFBindingGeneration\WPFBindingGeneration.csproj">
+      <Project>{e40418ab-f9ac-4492-b370-d95f76d8d94b}</Project>
+      <Name>WPFBindingGeneration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WPFExperiment\WPFBindingGenerationExample.csproj">
       <Project>{557E046E-0BCB-4325-83EC-C03C7BDAD225}</Project>
-      <Name>WPFExperiment</Name>
+      <Name>WPFBindingGenerationExample</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

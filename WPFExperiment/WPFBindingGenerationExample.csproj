@@ -63,21 +63,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BindingGenerators\BindingGenerator.cs" />
-    <Compile Include="BindingGenerators\Bindings\ConvertedPathExpressionBinding.cs" />
-    <Compile Include="BindingGenerators\Bindings\Converters\DelegateMultiValueConverter.cs" />
-    <Compile Include="BindingGenerators\Bindings\DefaultExpressionBinding.cs" />
-    <Compile Include="BindingGenerators\Bindings\IExpressionBinding.cs" />
-    <Compile Include="BindingGenerators\Bindings\Paths\IPathElement.cs" />
-    <Compile Include="BindingGenerators\Bindings\MultiPathExpressionBinding.cs" />
-    <Compile Include="BindingGenerators\Bindings\Converters\MultiValueConverterFromDelegate.cs" />
-    <Compile Include="BindingGenerators\OldBindingGenerator.cs" />
-    <Compile Include="BindingGenerators\Bindings\Paths\Parameter.cs" />
-    <Compile Include="BindingGenerators\Bindings\Paths\PathExpressionBinding.cs" />
-    <Compile Include="BindingGenerators\Bindings\Paths\PropertyAccess.cs" />
-    <Compile Include="BindingGenerators\Bindings\TwoPathExpressionBinding.cs" />
-    <Compile Include="BindingGenerators\SortedSet.cs" />
-    <Compile Include="DelegateConverter.cs" />
+    <Compile Include="OldBindingGenerator.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -112,6 +98,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WPFBindingGeneration\WPFBindingGeneration.csproj">
+      <Project>{e40418ab-f9ac-4492-b370-d95f76d8d94b}</Project>
+      <Name>WPFBindingGeneration</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
