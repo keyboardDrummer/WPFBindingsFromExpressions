@@ -2,14 +2,14 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace WPFBindingGeneration
+namespace WPFBindingGeneration.Bindings.Converters
 {
-	class DelegateConverter<T, U> : IValueConverter
+	class ValueConverterFromDelegate<T, U> : IValueConverter
 	{
 		readonly Func<U, T> backward;
 		readonly Func<T, U> forward;
 
-		public DelegateConverter(Func<T, U> forward, Func<U, T> backward)
+		public ValueConverterFromDelegate(Func<T, U> forward, Func<U, T> backward)
 		{
 			this.forward = forward;
 			this.backward = backward;

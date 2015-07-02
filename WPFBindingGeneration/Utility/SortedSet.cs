@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace WPFBindingGeneration
+namespace WPFBindingGeneration.Utility
 {
 	class SortedSet<T> : IReadOnlyList<T>
 	{

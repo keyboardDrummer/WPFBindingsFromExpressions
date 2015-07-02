@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Data;
+using WPFBindingGeneration.Bindings.Converters;
 using WPFBindingGeneration.Bindings.Paths;
 
 namespace WPFBindingGeneration.Bindings
@@ -30,7 +31,7 @@ namespace WPFBindingGeneration.Bindings
 		public override BindingBase ToBindingBase()
 		{
 			var result = pathExpression.ToBinding();
-			result.Converter = new DelegateConverter<OldTo, To>(forward, backward);
+			result.Converter = new ValueConverterFromDelegate<OldTo, To>(forward, backward);
 			return result;
 		}
 

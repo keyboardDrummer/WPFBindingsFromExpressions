@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using WPFBindingGeneration.Bindings;
 using WPFBindingGeneration.Bindings.Paths;
+using WPFBindingGeneration.Utility;
 
 namespace WPFBindingGeneration
 {
