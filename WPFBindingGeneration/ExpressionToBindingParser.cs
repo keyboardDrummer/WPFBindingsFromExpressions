@@ -7,7 +7,7 @@ using WPFBindingGeneration.Utility;
 
 namespace WPFBindingGeneration
 {
-	public static class BindingGenerator
+	public static class ExpressionToBindingParser
 	{
 		public static IExpressionBinding<From, To> TwoWay<From, To>(Expression<Func<From, To>> func)
 		{
@@ -96,21 +96,6 @@ namespace WPFBindingGeneration
 		{
 			var arrayIndex = Expression.ArrayIndex(parameter, Expression.Constant(index));
 			return Expression.Convert(arrayIndex, type);
-		}
-
-		public static PathExpressionBinding<From, To> Path<From, To>(Expression<Func<From, To>> func)
-		{
-			return new PathExpressionBinding<From, To>(func);
-		}
-
-		public static IExpressionBinding<From, To> Convert<From, To>(Func<From, To> func)
-		{
-			return Root<From>().Convert(func);
-		}
-
-		public static PathExpressionBinding<From, From> Root<From>()
-		{
-			return Path((From x) => x);
 		}
 	}
 }

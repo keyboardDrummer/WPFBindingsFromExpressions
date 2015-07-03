@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Data;
 using WPFBindingGeneration;
+using WPFBindingGeneration.ExpressionBindings;
 
 namespace WPFExperiment
 {
@@ -31,50 +32,50 @@ namespace WPFExperiment
 
 		void AddConstantColumns()
 		{
-			AddColumn(BindingGenerator.Convert((Item x) => false).ToBindingBase(), "Constant false");
-			AddColumn(BindingGenerator.Convert((Item x) => true).ToBindingBase(), "Constant true");
+			AddColumn(ExpressionBindings.Convert((Item x) => false).ToBindingBase(), "Constant false");
+			AddColumn(ExpressionBindings.Convert((Item x) => true).ToBindingBase(), "Constant true");
 		}
 
 		void AddIsNotCheckedOneWayColumn()
 		{
-			AddColumn(BindingGenerator.Path((Item item) => item.IsChecked).Convert(b => !b).ToBindingBase(), "Not checked read-only");
-			AddColumn(BindingGenerator.OneWay((Item item) => !item.IsChecked).ToBindingBase(), "Not checked read-only2");
+			AddColumn(ExpressionBindings.Path((Item item) => item.IsChecked).Convert(b => !b).ToBindingBase(), "Not checked read-only");
+			AddColumn(ExpressionToBindingParser.OneWay((Item item) => !item.IsChecked).ToBindingBase(), "Not checked read-only2");
 		}
 
 		void AddIsNotCheckedTwoWayColumn()
 		{
-			var binding = BindingGenerator.Path((Item item) => item.IsChecked).Convert(b => !b, b => !b).ToBindingBase();
+			var binding = ExpressionBindings.Path((Item item) => item.IsChecked).Convert(b => !b, b => !b).ToBindingBase();
 			var header = "Not checked writable";
 			AddColumn(binding, header);
 		}
 
 		void AddOneTimeAlwaysCheckedColumn()
 		{
-			var binding = BindingGenerator.Root<Item>().Convert(IsNotChecked).ToBindingBase();
+			var binding = ExpressionBindings.Root<Item>().Convert(IsNotChecked).ToBindingBase();
 			AddColumn(binding, "Not checked (one time)");
 		}
 
 		void AddIsCheckedColumn()
 		{
-			var binding = BindingGenerator.Path((Item item) => item.IsChecked).ToBindingBase();
+			var binding = ExpressionBindings.Path((Item item) => item.IsChecked).ToBindingBase();
 			AddColumn(binding, "Is checked");
 		}
 
 		void AddChildIsCheckedTwoWayColumn()
 		{
-			var binding = BindingGenerator.TwoWay((Item item) => item.ChildItem.IsChecked).ToBindingBase();
+			var binding = ExpressionToBindingParser.TwoWay((Item item) => item.ChildItem.IsChecked).ToBindingBase();
 			AddColumn(binding, "Is child checked");
 		}
 
 		void AddChildIsNotCheckedOneWayColumn()
 		{
-			var binding = BindingGenerator.OneWay((Item item) => !item.ChildItem.IsChecked).ToBindingBase();
+			var binding = ExpressionToBindingParser.OneWay((Item item) => !item.ChildItem.IsChecked).ToBindingBase();
 			AddColumn(binding, "Is child not checked (read-only)");
 		}
 
 		void AddBothChildAndBindingAreChecked()
 		{
-			var binding = BindingGenerator.OneWay((Item item) => item.ChildItem.IsChecked && item.IsChecked).ToBindingBase();
+			var binding = ExpressionToBindingParser.OneWay((Item item) => item.ChildItem.IsChecked && item.IsChecked).ToBindingBase();
 			AddColumn(binding, "BothChildAndBindingAreChecked");
 		}
 
