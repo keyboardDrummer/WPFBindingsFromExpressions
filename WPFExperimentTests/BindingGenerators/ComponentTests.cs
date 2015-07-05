@@ -1,4 +1,6 @@
-﻿using System.Windows.Data;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Data;
 using WPFBindingGeneration;
 using Xunit;
 
@@ -6,6 +8,8 @@ namespace WPFExperimentTests.BindingGenerators
 {
 	public class ComponentTests
 	{
+		ISet<Item> items;
+
 		[Fact]
 		public void SinglePathNoConverter()
 		{
@@ -50,14 +54,30 @@ namespace WPFExperimentTests.BindingGenerators
 		[Fact]
 		public void OneWayWithFunction()
 		{
-			var singlePath = ExpressionToBindingParser.OneWay((Item item) => UtilityFunction(item.IsChecked));
+			var singlePath = ExpressionToBindingParser.OneWay((Item item) => InstanceMethod(item.IsChecked));
 			var binding = (Binding) singlePath.ToBindingBase();
 			Assert.Equal("IsChecked", binding.Path.Path);
 			Assert.Equal(false, binding.Converter.Convert(true, null, null, null));
 			Assert.Equal(true, binding.Converter.Convert(false, null, null, null));
 		}
 
-		bool UtilityFunction(bool input)
+		[Fact]
+		public void ContextPropertyAndInstanceField()
+		{
+			var item1 = new Item(true);
+			var item2 = new Item(false);
+			var item3 = new Item(true);
+			items = new HashSet<Item> {item1, item2};
+			var expressionBinding = ExpressionToBindingParser.OneWay((Item x) => x.IsChecked && items.Contains(x));
+			var binding = (MultiBinding) expressionBinding.ToBindingBase();
+			Assert.True(binding.Bindings.OfType<Binding>().Any<Binding>(childBinding => childBinding.Path.Path == "IsChecked"));
+			Assert.True(binding.Bindings.OfType<Binding>().Any<Binding>(childBinding => childBinding.Path.Path == ""));
+			Assert.Equal(true, expressionBinding.Evaluate(item1));
+			Assert.Equal(false, expressionBinding.Evaluate(item2));
+			Assert.Equal(false, expressionBinding.Evaluate(item3));
+		}
+
+		bool InstanceMethod(bool input)
 		{
 			return !input;
 		}

@@ -11,6 +11,8 @@ namespace WPFExperiment
 	/// </summary>
 	public partial class MainWindow
 	{
+		readonly ISet<Item> checkedItems = new HashSet<Item>();
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -18,7 +20,9 @@ namespace WPFExperiment
 			var items = new List<Item> {firstItem, new Item(false), new Item(true)};
 			firstItem.ChildItem = new Item(true);
 			items[1].ChildItem = new Item(true);
+			checkedItems.Add(items[1]);
 			items[2].ChildItem = new Item(true);
+			checkedItems.Add(items[2]);
 			AddIsCheckedColumn();
 			AddConstantColumns();
 			AddOneTimeAlwaysCheckedColumn();
@@ -27,7 +31,13 @@ namespace WPFExperiment
 			AddChildIsCheckedTwoWayColumn();
 			AddChildIsNotCheckedOneWayColumn();
 			AddBothChildAndBindingAreChecked();
+			AddDependsOnInstance();
 			SuperGrid.ItemsSource = items;
+		}
+
+		void AddDependsOnInstance()
+		{
+			AddColumn(ExpressionToBindingParser.OneWay((Item x) => x.IsChecked && checkedItems.Contains(x)).ToBindingBase(), "Depends on instance");
 		}
 
 		void AddConstantColumns()

@@ -77,7 +77,7 @@ namespace WPFBindingGeneration
 			if (parameterExpression != null)
 			{
 				paths.Add(parameterExpression);
-				return GetParameter(parameter, paths.Count - 1, parameter.Type);
+				return GetParameter(parameter, paths.Count - 1, parameterExpression.Type);
 			}
 			var member = expression as MemberExpression;
 			if (member != null)
