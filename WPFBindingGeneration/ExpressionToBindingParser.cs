@@ -7,14 +7,35 @@ using WPFBindingGeneration.Utility;
 
 namespace WPFBindingGeneration
 {
+	// ReSharper disable once ConvertToStaticClass
+	public sealed class Unit
+	{
+		Unit()
+		{
+		}
+	}
+
 	public static class ExpressionToBindingParser
 	{
+		public static IExpressionBinding<Unit, To> TwoWay<To>(Expression<Func<To>> func)
+		{
+			var oneWay = OneWay(func);
+			if (!oneWay.IsWritable)
+				throw new ArgumentException();
+			return oneWay;
+		}
+
 		public static IExpressionBinding<From, To> TwoWay<From, To>(Expression<Func<From, To>> func)
 		{
 			var oneWay = OneWay(func);
 			if (!oneWay.IsWritable)
 				throw new ArgumentException();
 			return oneWay;
+		}
+
+		public static IExpressionBinding<Unit, To> OneWay<To>(Expression<Func<To>> func)
+		{
+			return OneWay(Expression.Lambda<Func<Unit, To>>(func.Body, Expression.Parameter(typeof (Unit))));
 		}
 
 		public static IExpressionBinding<From, To> OneWay<From, To>(Expression<Func<From, To>> func)
@@ -24,19 +45,17 @@ namespace WPFBindingGeneration
 			var parameter = Expression.Parameter(typeof (object[]), guid.ToString());
 			var newBody = ExtractPaths(parameter, func.Body, paths);
 			var pathFuncs = paths.Select(path => Expression.Lambda(path, func.Parameters[0])).ToList();
-			var parameterExpression = parameter;
-			var converter = Expression.Lambda<Func<object[], To>>(newBody, parameterExpression).Compile();
-			if (paths.Count == 1)
+			var converter = Expression.Lambda<Func<object[], To>>(newBody, parameter).Compile();
+			if (pathFuncs.Count == 1)
 			{
-				var path = paths[0];
 				if (IsEndPoint(newBody, parameter))
 				{
-					return new PathExpressionBinding<From, To>(Expression.Lambda<Func<From, To>>(path, Expression.Parameter(typeof (From))));
+					return new PathExpressionBinding<From, To>(pathFuncs[0]);
 				}
 				var pathBinding = new PathExpressionBinding<From, object>(pathFuncs[0]);
 				return pathBinding.Convert(value => new[] {value}).Convert(converter);
 			}
-			return new MultiPathExpressionBinding<From, To>(pathFuncs, converter);
+			return new MultiPathExpressionBinding<From, To>(pathFuncs, converter, null);
 		}
 
 		static bool IsEndPoint(Expression body, Expression parameter)

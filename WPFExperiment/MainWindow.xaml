@@ -9,7 +9,10 @@
                 <ColumnDefinition Width="403*"/>
             </Grid.ColumnDefinitions>
             <DataGrid x:Name="SuperGrid" Margin="0" RenderTransformOrigin="-3.333,-3.769" AutoGenerateColumns="False" Grid.ColumnSpan="2"/>
-
         </Grid>
+		<Label Content ="Text:"></Label>
+		<TextBox Name="SomeTextBox"></TextBox>
+		<Label Content ="Same text:"></Label>
+		<TextBox Name="SomeTextBox2"></TextBox>
     </StackPanel>
 </Window>

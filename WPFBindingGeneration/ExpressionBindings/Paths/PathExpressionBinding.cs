@@ -21,6 +21,15 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			get { return GetElements().Last().Writable; }
 		}
 
+		public override object DataContext
+		{
+			get
+			{
+				var firstElement = GetElements().First() as ContextReference;
+				return firstElement == null ? null : firstElement.Context;
+			}
+		}
+
 		public override To Evaluate(From @from)
 		{
 			return (To) func.Compile().DynamicInvoke(from);
@@ -42,12 +51,18 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			{
 				return new[] {new Parameter(parameterExpression)};
 			}
+
+			var value = expression as ConstantExpression;
+			if (value != null)
+			{
+				return new[] {new ContextReference(value.Value)};
+			}
 			throw new ArgumentException("Expression given to PathExpressionBinding was not a path.");
 		}
 
 		public Binding ToBinding()
 		{
-			var result = new Binding(string.Join(".", GetElements().Select(element => element.ToString()).Where(s => !string.IsNullOrEmpty(s))));
+			var result = new Binding(string.Join(".", GetElements().Select(element => element.ToPathString()).Where(s => !string.IsNullOrEmpty(s))));
 			result.Mode = IsWritable ? BindingMode.TwoWay : BindingMode.OneWay;
 			result.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 			return result;
@@ -63,7 +78,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			return GetPathElements(func.Body);
 		}
 
-		public ConvertedPathExpressionBinding<From, To, NewTo> Convert<NewTo>(Func<To, NewTo> forward = null, Func<NewTo, To> backward = null)
+		public override IExpressionBinding<From, NewTo> Convert<NewTo>(Func<To, NewTo> forward = null, Func<NewTo, To> backward = null)
 		{
 			return new ConvertedPathExpressionBinding<From, To, NewTo>(this, forward, backward);
 		}

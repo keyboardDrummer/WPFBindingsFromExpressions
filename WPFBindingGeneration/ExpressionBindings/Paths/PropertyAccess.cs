@@ -16,13 +16,13 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
             get { return property; }
         }
 
-        public override string ToString()
-        {
-            return property.Name;
-        }
-
         public bool Writable {
             get { return property.CanWrite; }
         }
+
+	    public string ToPathString()
+		{
+			return property.Name;
+	    }
     }
 }

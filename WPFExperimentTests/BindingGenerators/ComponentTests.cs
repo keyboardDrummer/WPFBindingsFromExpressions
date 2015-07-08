@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Data;
 using WPFBindingGeneration;
+using WPFBindingGeneration.ExpressionBindings;
 using Xunit;
 
 namespace WPFExperimentTests.BindingGenerators
@@ -9,6 +11,7 @@ namespace WPFExperimentTests.BindingGenerators
 	public class ComponentTests
 	{
 		ISet<Item> items;
+		public string SomeText { get; set; }
 
 		[Fact]
 		public void SinglePathNoConverter()
@@ -75,6 +78,16 @@ namespace WPFExperimentTests.BindingGenerators
 			Assert.Equal(true, expressionBinding.Evaluate(item1));
 			Assert.Equal(false, expressionBinding.Evaluate(item2));
 			Assert.Equal(false, expressionBinding.Evaluate(item3));
+		}
+
+		[Fact]
+		public void InstancePath()
+		{
+			var textBox = new TextBox();
+			ExpressionToBindingParser.TwoWay(() => SomeText).Apply(textBox, TextBox.TextProperty);
+			var bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);
+			Assert.Equal("SomeText", bindingExpression.ParentBinding.Path.Path);
+			Assert.Equal(this, textBox.DataContext);
 		}
 
 		bool InstanceMethod(bool input)

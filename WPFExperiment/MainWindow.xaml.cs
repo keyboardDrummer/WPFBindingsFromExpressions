@@ -1,21 +1,57 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 using System.Windows.Data;
 using WPFBindingGeneration;
 using WPFBindingGeneration.ExpressionBindings;
+using WPFExperiment.Properties;
 
 namespace WPFExperiment
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow
+	public partial class MainWindow : INotifyPropertyChanged
 	{
 		readonly ISet<Item> checkedItems = new HashSet<Item>();
+		string someText;
 
 		public MainWindow()
 		{
 			InitializeComponent();
+			AddGridExample();
+			AddTextExample();
+		}
+
+		public string SomeText
+		{
+			get { return someText; }
+			set
+			{
+				someText = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		void AddTextExample()
+		{
+			SomeText = "jo";
+			ExpressionToBindingParser.TwoWay(() => SomeText).Apply(SomeTextBox, TextBox.TextProperty);
+			ExpressionToBindingParser.TwoWay(() => SomeText).Apply(SomeTextBox2, TextBox.TextProperty);
+		}
+
+		[NotifyPropertyChangedInvocator]
+		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			var handler = PropertyChanged;
+			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		void AddGridExample()
+		{
 			var firstItem = new Item(true);
 			var items = new List<Item> {firstItem, new Item(false), new Item(true)};
 			firstItem.ChildItem = new Item(true);

@@ -10,24 +10,43 @@ namespace WPFBindingGeneration.ExpressionBindings
 {
 	class MultiPathExpressionBinding<From, To> : DefaultExpressionBinding<From, To>
 	{
-		readonly Func<object[], To> converter;
+		readonly Func<To, object[]> backward;
+		readonly Func<object[], To> forward;
 		readonly IList<LambdaExpression> paths;
 
-		public MultiPathExpressionBinding(IList<LambdaExpression> paths, Func<object[], To> converter)
+		public MultiPathExpressionBinding(IList<LambdaExpression> paths, Func<object[], To> forward, Func<To, object[]> backward)
 		{
 			this.paths = paths;
-			this.converter = converter;
+			this.forward = forward;
+			this.backward = backward;
 		}
 
 		public override bool IsWritable
 		{
-			get { return false; }
+			get { return paths.All(path => new PathExpressionBinding<From, object>(path).IsWritable) && backward != null; }
+		}
+
+		public override object DataContext
+		{
+			get
+			{
+				var contexts = new HashSet<object>(PathExpressionBindings.Select(path => path.DataContext));
+				if (contexts.Count == 1)
+					return contexts.First();
+
+				throw new ArgumentException("multi path sub paths have different data contexts.");
+			}
+		}
+
+		IEnumerable<PathExpressionBinding<From, object>> PathExpressionBindings
+		{
+			get { return paths.Select(path => new PathExpressionBinding<From, object>(path)); }
 		}
 
 		public override To Evaluate(From @from)
 		{
 			var pathValues = paths.Select(path => path.Compile().DynamicInvoke(from));
-			return converter(pathValues.ToArray());
+			return forward(pathValues.ToArray());
 		}
 
 		public override BindingBase ToBindingBase()
@@ -38,17 +57,23 @@ namespace WPFBindingGeneration.ExpressionBindings
 		public MultiBinding ToBinding()
 		{
 			var multiBinding = new MultiBinding();
-			foreach (var path in paths)
+			foreach (var path in PathExpressionBindings)
 			{
-				multiBinding.Bindings.Add(new PathExpressionBinding<From, object>(path).ToBindingBase());
+				multiBinding.Bindings.Add(path.ToBindingBase());
 			}
-			multiBinding.Converter = new MultiValueConverterFromDelegate<To>(converter);
+			multiBinding.Converter = new MultiValueConverterFromDelegate<To>(forward);
 			return multiBinding;
 		}
 
-		public MultiPathExpressionBinding<From, NewTo> Convert<NewTo>(Func<To, NewTo> forward)
+		public override IExpressionBinding<From, NewTo> Convert<NewTo>(Func<To, NewTo> forward2 = null, Func<NewTo, To> backward2 = null)
 		{
-			return new MultiPathExpressionBinding<From, NewTo>(paths, inputs => forward(converter(inputs)));
+			var combinedBackward = backward == null || backward2 == null
+				? (Func<NewTo, object[]>) null
+				: v => backward(backward2(v));
+			var combinedForward = forward == null || forward2 == null
+				? (Func<object[], NewTo>) null
+				: u => forward2(forward(u));
+			return new MultiPathExpressionBinding<From, NewTo>(paths, combinedForward, combinedBackward);
 		}
 	}
 }
