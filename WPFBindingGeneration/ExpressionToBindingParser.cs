@@ -178,7 +178,7 @@ namespace WPFBindingGeneration
 			public static ExtractPathsResult<IEnumerable<T>> Flatten(IEnumerable<ExtractPathsResult<T>> input)
 			{
 				var seed = new ExtractPathsResult<IEnumerable<T>>(c => Enumerable.Empty<T>(), new Utility.SortedSet<Expression>());
-				return input.Aggregate(seed, (l, r) => l.Combine(r, (a, b) => a.Concat(new[] {b})));
+				return input.Aggregate(seed, (results, result) => results.Combine(result, (items, item) => items.Concat(new[] {item})));
 			}
 
 			public ExtractPathsResult<R> Combine<U, R>(ExtractPathsResult<U> other, Func<T, U, R> merge)
