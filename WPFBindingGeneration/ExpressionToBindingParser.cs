@@ -7,14 +7,6 @@ using WPFBindingGeneration.ExpressionBindings.Paths;
 
 namespace WPFBindingGeneration
 {
-	// ReSharper disable once ConvertToStaticClass
-	public sealed class Unit
-	{
-		Unit()
-		{
-		}
-	}
-
 	public static class ExpressionToBindingParser
 	{
 		public static IExpressionBinding<Unit, To> TwoWay<To>(Expression<Func<To>> func)
