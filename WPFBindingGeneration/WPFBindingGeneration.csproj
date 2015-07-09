@@ -57,6 +57,7 @@
     <Compile Include="ExpressionBindings\Paths\PathExpressionBinding.cs" />
     <Compile Include="ExpressionBindings\Paths\PropertyAccess.cs" />
     <Compile Include="ExpressionBindings\Converters\ValueConverterFromDelegate.cs" />
+    <Compile Include="ExtractPathsResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="Utility\SortedSet.cs" />
