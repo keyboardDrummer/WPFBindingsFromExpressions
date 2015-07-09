@@ -26,21 +26,18 @@ namespace WPFBindingGeneration.ExpressionBindings
 			get { return paths.All(path => new PathExpressionBinding<From, object>(path).IsWritable) && backward != null; }
 		}
 
-		public override object DataContext
-		{
-			get
-			{
-				var contexts = new HashSet<object>(PathExpressionBindings.Select(path => path.DataContext));
-				if (contexts.Count == 1)
-					return contexts.First();
-
-				throw new ArgumentException("multi path sub paths have different data contexts.");
-			}
-		}
-
 		IEnumerable<PathExpressionBinding<From, object>> PathExpressionBindings
 		{
 			get { return paths.Select(path => new PathExpressionBinding<From, object>(path)); }
+		}
+
+		public override object GetDataContext()
+		{
+			var contexts = new HashSet<object>(PathExpressionBindings.Select(path => path.GetDataContext()));
+			if (contexts.Count == 1)
+				return contexts.First();
+
+			throw new ArgumentException("the sub paths of a multi path expression have different data contexts.");
 		}
 
 		public override To Evaluate(From @from)

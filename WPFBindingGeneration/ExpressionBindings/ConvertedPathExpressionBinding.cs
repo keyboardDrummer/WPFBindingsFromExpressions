@@ -35,9 +35,9 @@ namespace WPFBindingGeneration.ExpressionBindings
 			return result;
 		}
 
-		public override object DataContext
+		public override object GetDataContext()
 		{
-			get { return pathExpression.DataContext; }
+			return pathExpression.GetDataContext();
 		}
 
 		public override IExpressionBinding<From, NewTo> Convert<NewTo>(Func<To, NewTo> forward2 = null, Func<NewTo, To> backward2 = null)

@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
-using System.Windows.Data;
+using System.Windows.Controls.Primitives;
 using WPFBindingGeneration;
 using WPFBindingGeneration.ExpressionBindings;
 using WPFExperiment.Properties;
@@ -15,6 +15,7 @@ namespace WPFExperiment
 	public partial class MainWindow : INotifyPropertyChanged
 	{
 		readonly ISet<Item> checkedItems = new HashSet<Item>();
+		bool isChecked;
 		string someText;
 
 		public MainWindow()
@@ -22,6 +23,7 @@ namespace WPFExperiment
 			InitializeComponent();
 			AddGridExample();
 			AddTextExample();
+			ExpressionToBindingParser.TwoWay(() => IsChecked).Apply(CheckBox, ToggleButton.IsCheckedProperty);
 		}
 
 		public string SomeText
@@ -30,6 +32,16 @@ namespace WPFExperiment
 			set
 			{
 				someText = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public bool IsChecked
+		{
+			get { return isChecked; }
+			set
+			{
+				isChecked = value;
 				OnPropertyChanged();
 			}
 		}
@@ -67,68 +79,77 @@ namespace WPFExperiment
 			AddChildIsCheckedTwoWayColumn();
 			AddChildIsNotCheckedOneWayColumn();
 			AddBothChildAndBindingAreChecked();
-			AddDependsOnInstance();
+			AddDependsOnInstanceWithMethod();
+			//AddDependsOnInstanceWithPath(); Doesn't work.
 			SuperGrid.ItemsSource = items;
 		}
 
-		void AddDependsOnInstance()
+		void AddDependsOnInstanceWithMethod()
 		{
-			AddColumn(ExpressionToBindingParser.OneWay((Item x) => x.IsChecked && checkedItems.Contains(x)).ToBindingBase(), "Depends on instance");
+			var expressionBinding = ExpressionToBindingParser.OneWay((Item x) => x.IsChecked && checkedItems.Contains(x));
+			AddColumn(expressionBinding, "Depends on instance method");
+		}
+
+		void AddDependsOnInstanceWithPath()
+		{
+			var expressionBinding = ExpressionToBindingParser.OneWay((Item x) => x.IsChecked && IsChecked);
+			expressionBinding.Check();
+			AddColumn(expressionBinding, "Depends on instance path");
 		}
 
 		void AddConstantColumns()
 		{
-			AddColumn(ExpressionBindings.Convert((Item x) => false).ToBindingBase(), "Constant false");
-			AddColumn(ExpressionBindings.Convert((Item x) => true).ToBindingBase(), "Constant true");
+			AddColumn(ExpressionBindings.Convert((Item x) => false), "Constant false");
+			AddColumn(ExpressionBindings.Convert((Item x) => true), "Constant true");
 		}
 
 		void AddIsNotCheckedOneWayColumn()
 		{
-			AddColumn(ExpressionBindings.Path((Item item) => item.IsChecked).Convert(b => !b).ToBindingBase(), "Not checked read-only");
-			AddColumn(ExpressionToBindingParser.OneWay((Item item) => !item.IsChecked).ToBindingBase(), "Not checked read-only2");
+			AddColumn(ExpressionBindings.Path((Item item) => item.IsChecked).Convert(b => !b), "Not checked read-only");
+			AddColumn(ExpressionToBindingParser.OneWay((Item item) => !item.IsChecked), "Not checked read-only2");
 		}
 
 		void AddIsNotCheckedTwoWayColumn()
 		{
-			var binding = ExpressionBindings.Path((Item item) => item.IsChecked).Convert(b => !b, b => !b).ToBindingBase();
+			var binding = ExpressionBindings.Path((Item item) => item.IsChecked).Convert(b => !b, b => !b);
 			var header = "Not checked writable";
 			AddColumn(binding, header);
 		}
 
 		void AddOneTimeAlwaysCheckedColumn()
 		{
-			var binding = ExpressionBindings.Root<Item>().Convert(IsNotChecked).ToBindingBase();
+			var binding = ExpressionBindings.Root<Item>().Convert(IsNotChecked);
 			AddColumn(binding, "Not checked (one time)");
 		}
 
 		void AddIsCheckedColumn()
 		{
-			var binding = ExpressionBindings.Path((Item item) => item.IsChecked).ToBindingBase();
+			var binding = ExpressionBindings.Path((Item item) => item.IsChecked);
 			AddColumn(binding, "Is checked");
 		}
 
 		void AddChildIsCheckedTwoWayColumn()
 		{
-			var binding = ExpressionToBindingParser.TwoWay((Item item) => item.ChildItem.IsChecked).ToBindingBase();
+			var binding = ExpressionToBindingParser.TwoWay((Item item) => item.ChildItem.IsChecked);
 			AddColumn(binding, "Is child checked");
 		}
 
 		void AddChildIsNotCheckedOneWayColumn()
 		{
-			var binding = ExpressionToBindingParser.OneWay((Item item) => !item.ChildItem.IsChecked).ToBindingBase();
+			var binding = ExpressionToBindingParser.OneWay((Item item) => !item.ChildItem.IsChecked);
 			AddColumn(binding, "Is child not checked (read-only)");
 		}
 
 		void AddBothChildAndBindingAreChecked()
 		{
-			var binding = ExpressionToBindingParser.OneWay((Item item) => item.ChildItem.IsChecked && item.IsChecked).ToBindingBase();
+			var binding = ExpressionToBindingParser.OneWay((Item item) => item.ChildItem.IsChecked && item.IsChecked);
 			AddColumn(binding, "BothChildAndBindingAreChecked");
 		}
 
-		void AddColumn(BindingBase binding, string header)
+		void AddColumn(IExpressionBinding binding, string header)
 		{
 			var isCheckedColumn = new DataGridCheckBoxColumn();
-			isCheckedColumn.Binding = binding;
+			isCheckedColumn.Binding = binding.ToBindingBase();
 			isCheckedColumn.Header = header;
 			SuperGrid.Columns.Add(isCheckedColumn);
 		}

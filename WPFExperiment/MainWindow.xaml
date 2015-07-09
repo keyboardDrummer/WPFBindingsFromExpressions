@@ -14,5 +14,6 @@
 		<TextBox Name="SomeTextBox"></TextBox>
 		<Label Content ="Same text:"></Label>
 		<TextBox Name="SomeTextBox2"></TextBox>
-    </StackPanel>
+		<CheckBox Name="CheckBox"  Content="IsChecked"/>
+	</StackPanel>
 </Window>

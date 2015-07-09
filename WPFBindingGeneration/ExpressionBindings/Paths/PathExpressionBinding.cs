@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Windows.Data;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
@@ -21,43 +20,15 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			get { return GetElements().Last().Writable; }
 		}
 
-		public override object DataContext
+		public override object GetDataContext()
 		{
-			get
-			{
-				var firstElement = GetElements().First() as ContextReference;
-				return firstElement == null ? null : firstElement.Context;
-			}
+			var firstElement = GetElements().First() as ContextReference;
+			return firstElement == null ? null : firstElement.Context;
 		}
 
 		public override To Evaluate(From @from)
 		{
 			return (To) func.Compile().DynamicInvoke(from);
-		}
-
-		static IEnumerable<IPathElement> GetPathElements(Expression expression)
-		{
-			var memberExpression = expression as MemberExpression;
-			if (memberExpression != null)
-			{
-				var propertyInfo = memberExpression.Member as PropertyInfo;
-				if (propertyInfo == null)
-					throw new ArgumentException("Access must be a property, and not a field.");
-				return GetPathElements(memberExpression.Expression).Concat(new[] {new PropertyAccess(propertyInfo)});
-			}
-
-			var parameterExpression = expression as ParameterExpression;
-			if (parameterExpression != null)
-			{
-				return new[] {new Parameter(parameterExpression)};
-			}
-
-			var value = expression as ConstantExpression;
-			if (value != null)
-			{
-				return new[] {new ContextReference(value.Value)};
-			}
-			throw new ArgumentException("Expression given to PathExpressionBinding was not a path.");
 		}
 
 		public Binding ToBinding()
@@ -75,7 +46,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		IEnumerable<IPathElement> GetElements()
 		{
-			return GetPathElements(func.Body);
+			return PathExpressions.GetPathElements(func.Body);
 		}
 
 		public override IExpressionBinding<From, NewTo> Convert<NewTo>(Func<To, NewTo> forward = null, Func<NewTo, To> backward = null)

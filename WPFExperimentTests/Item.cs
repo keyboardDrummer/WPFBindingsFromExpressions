@@ -37,6 +37,11 @@ namespace WPFExperimentTests
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
+		public Item SomeMethod(bool isNewItemChecked)
+		{
+			return new Item(isNewItemChecked);
+		}
+
 		[NotifyPropertyChangedInvocator]
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{

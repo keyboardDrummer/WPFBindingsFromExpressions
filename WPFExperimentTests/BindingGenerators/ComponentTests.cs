@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,6 +13,7 @@ namespace WPFExperimentTests.BindingGenerators
 	{
 		ISet<Item> items;
 		public string SomeText { get; set; }
+		public bool IsChecked { get; set; }
 
 		[Fact]
 		public void SinglePathNoConverter()
@@ -93,6 +95,38 @@ namespace WPFExperimentTests.BindingGenerators
 		bool InstanceMethod(bool input)
 		{
 			return !input;
+		}
+
+		[Fact]
+		public void ContextPathAndInstancePath()
+		{
+			var expressionBinding = ExpressionToBindingParser.OneWay((Item x) => x.IsChecked && IsChecked);
+			Assert.Throws<ArgumentException>(() => expressionBinding.Check());
+		}
+
+		[Fact]
+		public void MemberCallWithPathInstance()
+		{
+			var expressionBinding = ExpressionToBindingParser.OneWay((Item x) => x.ChildItem.SomeMethod(true).IsChecked);
+			var binding = (Binding) expressionBinding.ToBindingBase();
+			Assert.Equal("ChildItem", binding.Path.Path);
+			var root = new Item(true);
+			root.ChildItem = new Item(false);
+			Assert.Equal(true, expressionBinding.Evaluate(root));
+		}
+
+		[Fact]
+		public void MemberCallMemberExpression()
+		{
+			var expressionBinding = ExpressionToBindingParser.OneWay((Item x) => x.ChildItem.SomeMethod(x.IsChecked).IsChecked);
+			var binding = (MultiBinding) expressionBinding.ToBindingBase();
+			Assert.True(binding.Bindings.OfType<Binding>().Any<Binding>(childBinding => childBinding.Path.Path == "IsChecked"));
+			Assert.True(binding.Bindings.OfType<Binding>().Any<Binding>(childBinding => childBinding.Path.Path == "ChildItem"));
+			var root = new Item(true);
+			root.ChildItem = new Item(false);
+			Assert.Equal(true, expressionBinding.Evaluate(root));
+
+			root.IsChecked = false;
 		}
 	}
 }

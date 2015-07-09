@@ -70,6 +70,9 @@ namespace WPFBindingGeneration
 			return index.Left == parameter;
 		}
 
+		/// <summary>
+		/// Returns an updated expression with all the paths replaced by parameters.
+		/// </summary>
 		static Expression ExtractPaths(ParameterExpression parameter, Expression expression, SortedSet<Expression> paths)
 		{
 			var binaryExpression = expression as BinaryExpression;
@@ -90,7 +93,8 @@ namespace WPFBindingGeneration
 			if (methodCall != null)
 			{
 				var newArguments = methodCall.Arguments.Select(argument => ExtractPaths(parameter, argument, paths));
-				return Expression.Call(methodCall.Object, methodCall.Method, newArguments);
+				var newObject = ExtractPaths(parameter, methodCall.Object, paths);
+				return Expression.Call(newObject, methodCall.Method, newArguments);
 			}
 			var parameterExpression = expression as ParameterExpression;
 			if (parameterExpression != null)
@@ -101,8 +105,16 @@ namespace WPFBindingGeneration
 			var member = expression as MemberExpression;
 			if (member != null)
 			{
-				paths.Add(member);
-				return GetParameter(parameter, paths.Count - 1, member.Type);
+				try
+				{
+					PathExpressions.GetPathElements(member).ToList();
+					paths.Add(member);
+					return GetParameter(parameter, paths.Count - 1, member.Type);
+				}
+				catch (ArgumentException)
+				{
+					return Expression.PropertyOrField(ExtractPaths(parameter, member.Expression, paths), member.Member.Name);
+				}
 			}
 			var constant = expression as ConstantExpression;
 			if (constant != null)
