@@ -48,8 +48,8 @@ namespace WPFExperimentTests.BindingGenerators
 		{
 			var singlePath = ExpressionToBindingParser.OneWay((Item item) => item.IsChecked && item.ChildItem.IsChecked);
 			var binding = (MultiBinding) singlePath.ToBindingBase();
-			Assert.Equal("IsChecked", ((Binding) binding.Bindings[0]).Path.Path);
-			Assert.Equal("ChildItem.IsChecked", ((Binding) binding.Bindings[1]).Path.Path);
+			Assert.Equal("IsChecked", ((Binding) binding.Bindings[1]).Path.Path);
+			Assert.Equal("ChildItem.IsChecked", ((Binding) binding.Bindings[0]).Path.Path);
 			Assert.Equal(false, binding.Converter.Convert(new object[] {true, false}, null, null, null));
 			Assert.Equal(true, binding.Converter.Convert(new object[] {true, true}, null, null, null));
 			Assert.Equal(false, binding.Converter.Convert(new object[] {false, true}, null, null, null));

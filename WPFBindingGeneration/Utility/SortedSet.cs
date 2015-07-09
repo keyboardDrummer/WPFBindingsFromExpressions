@@ -8,6 +8,16 @@ namespace WPFBindingGeneration.Utility
 		readonly IList<T> list = new List<T>();
 		readonly ISet<T> set = new HashSet<T>();
 
+		public SortedSet()
+		{
+		}
+
+		public SortedSet(params T[] items)
+		{
+			foreach (var item in items)
+				Add(item);
+		}
+
 		public IEnumerator<T> GetEnumerator()
 		{
 			return list.GetEnumerator();
