@@ -20,5 +20,10 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		{
 			return "";
 		}
+
+		public object Evaluate(object parameter)
+		{
+			return parameter;
+		}
 	}
 }

@@ -23,5 +23,10 @@
 		{
 			return "";
 		}
+
+		public object Evaluate(object parameter)
+		{
+			return context;
+		}
 	}
 }

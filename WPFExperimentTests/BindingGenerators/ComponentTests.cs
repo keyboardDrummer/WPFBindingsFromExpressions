@@ -16,6 +16,18 @@ namespace WPFExperimentTests.BindingGenerators
 		public bool IsChecked { get; set; }
 
 		[Fact]
+		public void EvaluateNullPath()
+		{
+			var root = new Item(false);
+
+			var paramChildIsChecked = ExpressionToBindingParser.TwoWay((Item item) => item.ChildItem.IsChecked);
+			Assert.Equal(false, paramChildIsChecked.Evaluate(root));
+
+			var paramChildChild = ExpressionToBindingParser.TwoWay((Item item) => item.ChildItem.ChildItem);
+			Assert.Equal(null, paramChildChild.Evaluate(root));
+		}
+
+		[Fact]
 		public void SinglePathNoConverter()
 		{
 			var singlePath = ExpressionToBindingParser.TwoWay((Item item) => item.IsChecked);

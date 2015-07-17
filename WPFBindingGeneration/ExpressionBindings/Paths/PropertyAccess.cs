@@ -24,5 +24,13 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		{
 			return property.Name;
 	    }
+
+	    public object Evaluate(object parameter)
+	    {
+		    if (parameter == null)
+			    return null;
+
+		    return Property.GetValue(parameter);
+	    }
     }
 }

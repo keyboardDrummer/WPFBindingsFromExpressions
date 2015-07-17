@@ -28,7 +28,11 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		public override To Evaluate(From @from)
 		{
-			return (To) func.Compile().DynamicInvoke(from);
+			var obj = GetElements().Aggregate((object) @from, (value, link) => link.Evaluate(value));
+			if (obj == null)
+				return default(To);
+
+			return (To) obj;
 		}
 
 		public Binding ToBinding()

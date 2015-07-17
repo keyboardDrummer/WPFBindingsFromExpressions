@@ -5,6 +5,9 @@ using System.Linq.Expressions;
 
 namespace WPFBindingGeneration
 {
+
+	internal delegate Expression CreatePathParameter(Expression path, Type type);
+
 	class ExtractPathsResult<T>
 	{
 		readonly Func<CreatePathParameter, T> createExpression;
@@ -50,7 +53,5 @@ namespace WPFBindingGeneration
 		{
 			return new ExtractPathsResult<U>(c => func(createExpression(c)), paths);
 		}
-
-		internal delegate Expression CreatePathParameter(Expression path, Type type);
 	}
 }
