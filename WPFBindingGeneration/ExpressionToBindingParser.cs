@@ -102,6 +102,15 @@ namespace WPFBindingGeneration
 			if (constant != null)
 				return new ExtractPathsResult<Expression>(p => constant);
 
+			var conditional = expression as ConditionalExpression;
+			if (conditional != null)
+			{
+				var conditionResult = ExtractPaths(conditional.Test);
+				var thenResult = ExtractPaths(conditional.IfTrue);
+				var elseResult = ExtractPaths(conditional.IfFalse);
+				return elseResult.Combine(thenResult, Tuple.Create).Combine(conditionResult, 
+					(thenAndElse, condition) => (Expression)Expression.Condition(condition, thenAndElse.Item1, thenAndElse.Item2, conditional.Type));
+			}
 			throw new NotImplementedException();
 		}
 
