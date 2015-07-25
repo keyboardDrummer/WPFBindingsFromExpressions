@@ -42,7 +42,7 @@ namespace WPFBindingGeneration.ExpressionBindings
 
 		public override To Evaluate(From @from)
 		{
-			var pathValues = paths.Select(path => path.Compile().DynamicInvoke(from));
+			var pathValues = PathExpressionBindings.Select(path => path.Evaluate(from));
 			return forward(pathValues.ToArray());
 		}
 

@@ -15,7 +15,10 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			{
 				var propertyInfo = memberExpression.Member as PropertyInfo;
 				if (propertyInfo == null)
-					throw new ArgumentException("Access must be a property, and not a field.");
+				{
+					return new[] { new ContextReference(Expression.Lambda(memberExpression).Compile().DynamicInvoke()) };
+					//throw new ArgumentException("Access must be a property, and not a field.");	
+				}
 				return GetPathElements(memberExpression.Expression).Concat(new[] { new PropertyAccess(propertyInfo) });
 			}
 

@@ -57,6 +57,12 @@
     <Compile Include="ExpressionBindings\Paths\PathExpressionBinding.cs" />
     <Compile Include="ExpressionBindings\Paths\PropertyAccess.cs" />
     <Compile Include="ExpressionBindings\Converters\ValueConverterFromDelegate.cs" />
+    <Compile Include="ExpressionFunc\ContextFreeExpression.cs" />
+    <Compile Include="ExpressionFunc\ContextualExpression.cs" />
+    <Compile Include="ExpressionFunc\DefaultExpressionFunc.cs" />
+    <Compile Include="ExpressionFunc\ExpressionFuncExtensions.cs" />
+    <Compile Include="ExpressionFunc\ExpressionFunc.cs" />
+    <Compile Include="ExpressionFunc\ReplaceParameter.cs" />
     <Compile Include="ExtractPathsResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit.cs" />

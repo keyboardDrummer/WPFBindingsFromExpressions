@@ -24,7 +24,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Converters
 			catch (InvalidCastException)
 			{
 				if (values.Contains(DependencyProperty.UnsetValue))
-					throw new Exception("one of the paths is null");
+					return null;
 				throw;
 			}
 		}

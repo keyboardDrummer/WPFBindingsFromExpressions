@@ -140,5 +140,24 @@ namespace WPFExperimentTests.BindingGenerators
 
 			root.IsChecked = false;
 		}
+
+		[Fact]
+		public void TestNullConversion()
+		{
+			var binding = ExpressionToBindingParser.OneWay((Item x) => x.ChildItem == null ? "None" : x.ChildItem.ToString());
+			Assert.Equal("None", binding.Evaluate(null));
+		}
+
+		[Fact]
+		public void TestStaticMethod()
+		{
+			var binding = ExpressionToBindingParser.OneWay((Item x) => StaticMethod());
+			Assert.Equal(true, binding.Evaluate(null));
+		}
+
+		static bool StaticMethod()
+		{
+			return true;
+		}
 	}
 }

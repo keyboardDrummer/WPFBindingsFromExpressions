@@ -31,14 +31,13 @@ namespace WPFBindingGeneration
 
 		public static IExpressionBinding<From, To> OneWay<From, To>(Expression<Func<From, To>> func)
 		{
-			var guid = Guid.NewGuid();
 			var result = ExtractPaths(func.Body);
 			var paths = result.Paths;
 			var pathFuncs = paths.Select(path => Expression.Lambda(path, func.Parameters[0])).ToList();
 
 			if (pathFuncs.Count == 1)
 			{
-				var objectParameter = Expression.Parameter(typeof (object), guid.ToString());
+				var objectParameter = Expression.Parameter(typeof (object));
 				var newBody = result.CreateExpression((path, type) => Expression.Convert(objectParameter, type));
 				if (IsEndPoint(newBody, objectParameter))
 				{
@@ -51,7 +50,7 @@ namespace WPFBindingGeneration
 			else
 			{
 				var pathIndices = paths.Select((e, i) => Tuple.Create(e, i)).ToDictionary(t => t.Item1, t => t.Item2);
-				var arrayParameter = Expression.Parameter(typeof (object[]), guid.ToString());
+				var arrayParameter = Expression.Parameter(typeof (object[]));
 				var arrayParameterBody = result.CreateExpression((path, type) => GetArrayParameter(arrayParameter, pathIndices[path], type));
 				var converter = Expression.Lambda<Func<object[], To>>(arrayParameterBody, arrayParameter).Compile();
 				return new MultiPathExpressionBinding<From, To>(pathFuncs, converter, null);
@@ -108,8 +107,8 @@ namespace WPFBindingGeneration
 				var conditionResult = ExtractPaths(conditional.Test);
 				var thenResult = ExtractPaths(conditional.IfTrue);
 				var elseResult = ExtractPaths(conditional.IfFalse);
-				return elseResult.Combine(thenResult, Tuple.Create).Combine(conditionResult, 
-					(thenAndElse, condition) => (Expression)Expression.Condition(condition, thenAndElse.Item1, thenAndElse.Item2, conditional.Type));
+				return thenResult.Combine(elseResult, Tuple.Create).Combine(conditionResult,
+					(thenAndElse, condition) => (Expression) Expression.Condition(condition, thenAndElse.Item1, thenAndElse.Item2, conditional.Type));
 			}
 			throw new NotImplementedException();
 		}
@@ -126,7 +125,9 @@ namespace WPFBindingGeneration
 		{
 			var argumentResults = methodCall.Arguments.Select(ExtractPaths);
 			var argumentsResult = ExtractPathsResult<Expression>.Flatten(argumentResults);
-			var objectResult = ExtractPaths(methodCall.Object);
+			var objectResult = methodCall.Object == null
+				? new ExtractPathsResult<Expression>(f => null)
+				: ExtractPaths(methodCall.Object);
 			return objectResult.Combine(argumentsResult, (newObject, newArguments) => (Expression) Expression.Call(newObject, methodCall.Method, newArguments));
 		}
 
