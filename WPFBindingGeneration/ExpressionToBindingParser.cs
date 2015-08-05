@@ -33,7 +33,8 @@ namespace WPFBindingGeneration
 		{
 			var result = ExtractPaths(func.Body);
 			var paths = result.Paths;
-			var pathFuncs = paths.Select(path => Expression.Lambda(path, func.Parameters[0])).ToList();
+			var parameter = func.Parameters[0];
+			var pathFuncs = paths.Select(path => Expression.Lambda(path, parameter)).ToList();
 
 			if (pathFuncs.Count == 1)
 			{
@@ -49,9 +50,11 @@ namespace WPFBindingGeneration
 			}
 			else
 			{
-				var pathIndices = paths.Select((e, i) => Tuple.Create(e, i)).ToDictionary(t => t.Item1, t => t.Item2);
 				var arrayParameter = Expression.Parameter(typeof (object[]));
+				var pathIndices = paths.Select((e, i) => Tuple.Create(e, i)).ToDictionary(t => t.Item1, t => t.Item2);
+
 				var arrayParameterBody = result.CreateExpression((path, type) => GetArrayParameter(arrayParameter, pathIndices[path], type));
+
 				var converter = Expression.Lambda<Func<object[], To>>(arrayParameterBody, arrayParameter).Compile();
 				return new MultiPathExpressionBinding<From, To>(pathFuncs, converter, null);
 			}

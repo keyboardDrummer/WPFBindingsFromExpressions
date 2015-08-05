@@ -8,12 +8,6 @@ namespace WPFBindingGeneration.ExpressionBindings
 		bool IsWritable { get; }
 		Type TargetType { get; }
 		Type SourceType { get; }
-
-		/// <summary>
-		/// Returning null implies the data context is set by the container.
-		/// </summary>
-		object GetDataContext();
-
 		BindingBase ToBindingBase();
 	}
 

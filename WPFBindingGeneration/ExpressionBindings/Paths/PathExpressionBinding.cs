@@ -20,7 +20,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			get { return GetElements().Last().Writable; }
 		}
 
-		public override object GetDataContext()
+		object GetSource()
 		{
 			var firstElement = GetElements().First() as ContextReference;
 			return firstElement == null ? null : firstElement.Context;
@@ -39,6 +39,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		{
 			var result = new Binding(string.Join(".", GetElements().Select(element => element.ToPathString()).Where(s => !string.IsNullOrEmpty(s))));
 			result.Mode = IsWritable ? BindingMode.TwoWay : BindingMode.OneWay;
+			result.Source = GetSource();
 			result.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 			return result;
 		}

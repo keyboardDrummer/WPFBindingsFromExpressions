@@ -9,7 +9,6 @@ namespace WPFBindingGeneration.ExpressionBindings
 	{
 		public static void Check(this IExpressionBinding binding)
 		{
-			binding.GetDataContext();
 		}
 
 		public static void Apply(this IExpressionBinding binding, FrameworkElement frameworkElement, DependencyProperty dependencyProperty)
@@ -18,8 +17,6 @@ namespace WPFBindingGeneration.ExpressionBindings
 			//	throw new ArgumentException();
 
 			frameworkElement.SetBinding(dependencyProperty, binding.ToBindingBase());
-			if (binding.GetDataContext() != null)
-				frameworkElement.DataContext = binding.GetDataContext();
 		}
 
 		public static PathExpressionBinding<From, To> Path<From, To>(Expression<Func<From, To>> func)

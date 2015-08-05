@@ -19,9 +19,13 @@ namespace WPFBindingGeneration.ExpressionFunc
 		internal static MethodCallExpression CreateCall(Delegate compose, params Expression[] arguments)
 		{
 			var constantTarget = Expression.Constant(compose.Target);
-			return compose.Method.IsStatic
-				? Expression.Call(compose.Method, new[] {constantTarget}.Concat(arguments))
-				: Expression.Call(constantTarget, compose.Method, arguments);
+			if (compose.Method.IsStatic)
+			{
+				return compose.Target == null
+					? Expression.Call(compose.Method, arguments)
+					: Expression.Call(compose.Method, new[] {constantTarget}.Concat(arguments));
+			}
+			return Expression.Call(constantTarget, compose.Method, arguments);
 		}
 
 		public static IExpressionFunc<To> Compose<L, R, To>(IExpressionFunc<L> left, IExpressionFunc<R> right, Func<L, R, To> compose)

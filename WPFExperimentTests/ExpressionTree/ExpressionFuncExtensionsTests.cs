@@ -55,23 +55,27 @@ namespace WPFExperimentTests.ExpressionTree
 		public void ComposeContextualContextFree()
 		{
 			var itemIsChecked = ExpressionFuncExtensions.Create((Item item) => item.IsChecked);
-			var isChildIsChecked = ExpressionFuncExtensions.Create(() => staticItem.ChildItem.IsChecked);
+			var isChildIsChecked = ExpressionFuncExtensions.Create(() => staticItemWithChild.ChildItem.IsChecked);
 			var andCombo = ExpressionFuncExtensions.Compose(itemIsChecked, isChildIsChecked, (a, b) => a && b);
-
-			var binding = (Binding) andCombo.ExpressionBinding.ToBindingBase();
 
 			Assert.Equal(true, andCombo.Evaluate(new Item(true)));
 			Assert.Equal(false, andCombo.Evaluate(new Item(false)));
 
-			Assert.Equal("IsChecked", binding.Path.Path);
-			Assert.Equal(true, binding.Converter.Convert(new object[] {true}, null, null, null));
-			Assert.Equal(false, binding.Converter.Convert(new object[] {false}, null, null, null));
+			var bindingBase = andCombo.ExpressionBinding.ToBindingBase();
+			var binding = (MultiBinding) bindingBase;
+
+			var bindings = binding.Bindings.OfType<Binding>().ToList();
+			Assert.True(bindings.Any(childBinding => childBinding.Source == null && childBinding.Path.Path == "IsChecked"));
+			Assert.True(bindings.Any(childBinding => childBinding.Source == staticItemWithChild && childBinding.Path.Path == "ChildItem.IsChecked"));
+
+			Assert.Equal(true, binding.Converter.Convert(new object[] {true, true}, null, null, null));
+			Assert.Equal(false, binding.Converter.Convert(new object[] {false, true}, null, null, null));
 		}
 
 		[Fact]
 		public void EvaluateNullPath()
 		{
-			var root = new Item(false);
+			var root = CreateItemWithChild(false, false); //new Item(false));
 
 			var paramChildIsChecked = ExpressionFuncExtensions.Create((Item item) => item.ChildItem.IsChecked);
 			Assert.Equal(false, paramChildIsChecked.Evaluate(root));
@@ -141,7 +145,7 @@ namespace WPFExperimentTests.ExpressionTree
 			ExpressionFuncExtensions.Create(() => SomeText).ExpressionBinding.Apply(textBox, TextBox.TextProperty);
 			var bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);
 			Assert.Equal("SomeText", bindingExpression.ParentBinding.Path.Path);
-			Assert.Equal(this, textBox.DataContext);
+			Assert.Equal(this, bindingExpression.ParentBinding.Source);
 		}
 
 		bool InstanceMethod(bool input)
