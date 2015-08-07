@@ -8,7 +8,7 @@ using Xunit;
 
 namespace WPFExperimentTests.BindingGenerators
 {
-	public class ComponentTests
+	public class ExpressionBindingToWpfTests
 	{
 		static readonly Item staticItem = new Item(false);
 		static readonly Item staticItemWithChild = CreateItemWithChild(false, true);
@@ -16,12 +16,26 @@ namespace WPFExperimentTests.BindingGenerators
 		public string SomeText { get; set; }
 		public bool IsChecked { get; set; }
 
+		public static Item StaticItemProperty
+		{
+			get { return staticItem; }
+		}
+
 		static Item CreateItemWithChild(bool isChecked, bool isChildCheck)
 		{
 			return new Item(isChecked)
 			{
 				ChildItem = new Item(isChildCheck)
 			};
+		}
+
+		[Fact]
+		public void StaticProperty()
+		{
+			var staticProperty = ExpressionToBindingParser.TwoWay(() => StaticItemProperty.IsChecked);
+			Assert.Equal(false, staticProperty.Evaluate(Unit.Instance));
+			var binding = (Binding) staticProperty.ToBindingBase();
+			Assert.Equal("IsChecked", binding.Path.Path);
 		}
 
 		[Fact]

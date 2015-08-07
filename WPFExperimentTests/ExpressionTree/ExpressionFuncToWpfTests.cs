@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -10,7 +9,7 @@ using Xunit;
 
 namespace WPFExperimentTests.ExpressionTree
 {
-	public class ExpressionFuncExtensionsTests
+	public class ExpressionFuncToWpfTests
 	{
 		static readonly Item staticItem = new Item(false);
 
@@ -151,13 +150,6 @@ namespace WPFExperimentTests.ExpressionTree
 		bool InstanceMethod(bool input)
 		{
 			return !input;
-		}
-
-		[Fact]
-		public void ContextPathAndInstancePath()
-		{
-			var expressionBinding = ExpressionToBindingParser.OneWay((Item x) => x.IsChecked && IsChecked);
-			Assert.Throws<ArgumentException>(() => expressionBinding.Check());
 		}
 
 		[Fact]

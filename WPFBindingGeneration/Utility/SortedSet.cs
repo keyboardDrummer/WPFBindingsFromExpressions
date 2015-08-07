@@ -6,13 +6,14 @@ namespace WPFBindingGeneration.Utility
 	class SortedSet<T> : IReadOnlyList<T>
 	{
 		readonly IList<T> list = new List<T>();
-		readonly ISet<T> set = new HashSet<T>();
+		readonly ISet<T> set;
 
-		public SortedSet()
+		public SortedSet(IEqualityComparer<T> comparer)
 		{
+			set = new HashSet<T>(comparer);
 		}
 
-		public SortedSet(params T[] items)
+		public SortedSet(IEqualityComparer<T> comparer, params T[] items) : this(comparer)
 		{
 			foreach (var item in items)
 				Add(item);

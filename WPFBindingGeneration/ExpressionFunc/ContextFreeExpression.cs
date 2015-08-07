@@ -37,7 +37,7 @@ namespace WPFBindingGeneration.ExpressionFunc
 
 		public override To Evaluate(Unit @from)
 		{
-			return tree.Compile()();
+			return tree.DebugCompile()();
 		}
 	}
 }

@@ -45,7 +45,7 @@ namespace WPFBindingGeneration
 					return new PathExpressionBinding<From, To>(pathFuncs[0]);
 				}
 				var pathBinding = new PathExpressionBinding<From, object>(pathFuncs[0]);
-				var converter = Expression.Lambda<Func<object, To>>(newBody, objectParameter).Compile();
+				var converter = Expression.Lambda<Func<object, To>>(newBody, objectParameter).DebugCompile();
 				return pathBinding.Convert(converter);
 			}
 			else
@@ -55,7 +55,7 @@ namespace WPFBindingGeneration
 
 				var arrayParameterBody = result.CreateExpression((path, type) => GetArrayParameter(arrayParameter, pathIndices[path], type));
 
-				var converter = Expression.Lambda<Func<object[], To>>(arrayParameterBody, arrayParameter).Compile();
+				var converter = Expression.Lambda<Func<object[], To>>(arrayParameterBody, arrayParameter).DebugCompile();
 				return new MultiPathExpressionBinding<From, To>(pathFuncs, converter, null);
 			}
 		}
@@ -136,15 +136,11 @@ namespace WPFBindingGeneration
 
 		static ExtractPathsResult<Expression> ParseMemberExpression(MemberExpression member)
 		{
-			try
-			{
-				PathExpressions.GetPathElements(member).ToList();
-				return new ExtractPathsResult<Expression>(createParameter => createParameter(member, member.Type), member);
-			}
-			catch (ArgumentException)
-			{
+			var pathExpression = PathExpressions.GetPathElements(member);
+			if (pathExpression == null)
 				return ExtractPaths(member.Expression).Select(newMember => (Expression) Expression.PropertyOrField(newMember, member.Member.Name));
-			}
+			else
+				return new ExtractPathsResult<Expression>(createParameter => createParameter(member, member.Type), member);
 		}
 
 		static Expression GetArrayParameter(ParameterExpression parameter, int index, Type type)

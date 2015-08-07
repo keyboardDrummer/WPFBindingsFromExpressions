@@ -19,7 +19,13 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 					return new[] { new ContextReference(Expression.Lambda(memberExpression).Compile().DynamicInvoke()) };
 					//throw new ArgumentException("Access must be a property, and not a field.");	
 				}
-				return GetPathElements(memberExpression.Expression).Concat(new[] { new PropertyAccess(propertyInfo) });
+				if (propertyInfo.GetMethod.IsStatic)
+				{
+					return new[] { new ContextReference(propertyInfo.GetValue(null)) }; //Sure I want to evaluate now?
+				}
+
+				var recursive = GetPathElements(memberExpression.Expression);
+				return recursive == null ? null : recursive.Concat(new[] { new PropertyAccess(propertyInfo) });
 			}
 
 			var parameterExpression = expression as ParameterExpression;
@@ -33,7 +39,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			{
 				return new[] { new ContextReference(value.Value) };
 			}
-			throw new ArgumentException("Expression given to PathExpressionBinding was not a path.");
+			return null;
 		}
 	}
 }

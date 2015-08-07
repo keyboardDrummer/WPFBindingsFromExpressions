@@ -55,8 +55,9 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="BindingGenerators\ComponentTests.cs" />
-    <Compile Include="ExpressionTree\ExpressionFuncExtensionsTests.cs" />
+    <Compile Include="BindingGenerators\ExpressionBindingToWpfTests.cs" />
+    <Compile Include="BindingGenerators\ExpressionParserTests.cs" />
+    <Compile Include="ExpressionTree\ExpressionFuncToWpfTests.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

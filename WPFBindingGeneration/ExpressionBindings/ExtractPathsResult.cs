@@ -5,8 +5,20 @@ using System.Linq.Expressions;
 
 namespace WPFBindingGeneration
 {
+	class ToStringEqualityComparer<T> : IEqualityComparer<T>
+	{
+		public bool Equals(T x, T y)
+		{
+			return x.ToString() == y.ToString();
+		}
 
-	internal delegate Expression CreatePathParameter(Expression path, Type type);
+		public int GetHashCode(T obj)
+		{
+			return obj.ToString().GetHashCode();
+		}
+	}
+
+	delegate Expression CreatePathParameter(Expression path, Type type);
 
 	class ExtractPathsResult<T>
 	{
@@ -14,7 +26,7 @@ namespace WPFBindingGeneration
 		readonly Utility.SortedSet<Expression> paths;
 
 		public ExtractPathsResult(Func<CreatePathParameter, T> createExpression, params Expression[] paths)
-			: this(createExpression, new Utility.SortedSet<Expression>(paths))
+			: this(createExpression, new Utility.SortedSet<Expression>(new ToStringEqualityComparer<Expression>(), paths))
 		{
 		}
 
@@ -36,13 +48,13 @@ namespace WPFBindingGeneration
 
 		public static ExtractPathsResult<IEnumerable<T>> Flatten(IEnumerable<ExtractPathsResult<T>> input)
 		{
-			var seed = new ExtractPathsResult<IEnumerable<T>>(c => Enumerable.Empty<T>(), new Utility.SortedSet<Expression>());
+			var seed = new ExtractPathsResult<IEnumerable<T>>(c => Enumerable.Empty<T>());
 			return input.Aggregate(seed, (results, result) => results.Combine(result, (items, item) => items.Concat(new[] {item})));
 		}
 
 		public ExtractPathsResult<R> Combine<U, R>(ExtractPathsResult<U> other, Func<T, U, R> merge)
 		{
-			var combinedPaths = new Utility.SortedSet<Expression>();
+			var combinedPaths = new Utility.SortedSet<Expression>(new ToStringEqualityComparer<Expression>());
 			foreach (var item in other.paths.Concat(paths))
 				combinedPaths.Add(item);
 
