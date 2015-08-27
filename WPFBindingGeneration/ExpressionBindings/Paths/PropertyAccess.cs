@@ -2,35 +2,55 @@
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-    class PropertyAccess : IPathElement
-    {
-        private readonly PropertyInfo property;
+	class PropertyAccess : IPathElement
+	{
+		private readonly PropertyInfo property;
+		private readonly IPathElement inner;
 
-        public PropertyAccess(PropertyInfo property)
-        {
-            this.property = property;
-        }
-
-        public PropertyInfo Property
-        {
-            get { return property; }
-        }
-
-        public bool Writable {
-            get { return property.CanWrite; }
-        }
-
-	    public string ToPathString()
+		public PropertyAccess(PropertyInfo property, IPathElement inner)
 		{
-			return property.Name;
-	    }
+			this.property = property;
+			this.inner = inner;
+		}
 
-	    public object Evaluate(object parameter)
-	    {
-		    if (parameter == null)
-			    return null;
+		public PropertyInfo Property
+		{
+			get
+			{
+				return property;
+			}
+		}
 
-		    return Property.GetValue(parameter);
-	    }
-    }
+		public bool Writable
+		{
+			get
+			{
+				return property.GetSetMethod(false) != null;
+			}
+		}
+
+		public object Source
+		{
+			get
+			{
+				return inner.Source;
+			}
+		}
+
+		public string ToPathString()
+		{
+			return inner.ToPathString() + "." + property.Name;
+		}
+
+		public object Evaluate(object parameter)
+		{
+			var innerValue = inner.Evaluate(parameter);
+			if (innerValue == null)
+			{
+				return null;
+			}
+
+			return Property.GetValue(innerValue);
+		}
+	}
 }

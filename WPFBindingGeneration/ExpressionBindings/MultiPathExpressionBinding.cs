@@ -49,6 +49,7 @@ namespace WPFBindingGeneration.ExpressionBindings
 			{
 				multiBinding.Bindings.Add(path.ToBindingBase());
 			}
+			multiBinding.Mode = BindingMode.OneWay; 
 			multiBinding.Converter = new MultiValueConverterFromDelegate<To>(forward);
 			return multiBinding;
 		}

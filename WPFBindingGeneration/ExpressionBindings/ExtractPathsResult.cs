@@ -26,7 +26,7 @@ namespace WPFBindingGeneration
 		readonly Utility.SortedSet<Expression> paths;
 
 		public ExtractPathsResult(Func<CreatePathParameter, T> createExpression, params Expression[] paths)
-			: this(createExpression, new Utility.SortedSet<Expression>(new ToStringEqualityComparer<Expression>(), paths))
+			: this(createExpression, new Utility.SortedSet<Expression>(Comparer, paths))
 		{
 		}
 
@@ -34,6 +34,12 @@ namespace WPFBindingGeneration
 		{
 			this.paths = paths;
 			this.createExpression = createExpression;
+		}
+
+		public static IEqualityComparer<Expression> Comparer
+		{
+			get { return EqualityComparer<Expression>.Default; //TODO bring back new ToStringEqualityComparer<Expression>();
+			}
 		}
 
 		public Utility.SortedSet<Expression> Paths
@@ -54,7 +60,7 @@ namespace WPFBindingGeneration
 
 		public ExtractPathsResult<R> Combine<U, R>(ExtractPathsResult<U> other, Func<T, U, R> merge)
 		{
-			var combinedPaths = new Utility.SortedSet<Expression>(new ToStringEqualityComparer<Expression>());
+			var combinedPaths = new Utility.SortedSet<Expression>(Comparer);
 			foreach (var item in other.paths.Concat(paths))
 				combinedPaths.Add(item);
 

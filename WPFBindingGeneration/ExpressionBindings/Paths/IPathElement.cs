@@ -2,7 +2,16 @@
 {
 	public interface IPathElement
 	{
-		bool Writable { get; }
+		bool Writable
+		{
+			get;
+		}
+
+		object Source
+		{
+			get;
+		}
+
 		string ToPathString();
 		object Evaluate(object parameter);
 	}

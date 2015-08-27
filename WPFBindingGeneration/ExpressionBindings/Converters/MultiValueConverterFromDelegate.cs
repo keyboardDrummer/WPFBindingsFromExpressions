@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -17,16 +18,20 @@ namespace WPFBindingGeneration.ExpressionBindings.Converters
 
 		public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
 		{
-			try
+			if (values.All(x => x == DependencyProperty.UnsetValue))
 			{
-				return converter(values);
+				return DependencyProperty.UnsetValue;
 			}
-			catch (InvalidCastException)
+			ISet<int> nulledElements = new HashSet<int>(); //TODO remove this debug info.
+			for (int i = 0; i < values.Length; i++)
 			{
-				if (values.Contains(DependencyProperty.UnsetValue))
-					return null;
-				throw;
+				if (values[i] == DependencyProperty.UnsetValue)
+			{
+					values[i] = null;
+					nulledElements.Add(i);
+				}
 			}
+			return converter(values);
 		}
 
 		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

@@ -4,7 +4,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
 	class Parameter : IPathElement
 	{
-		readonly ParameterExpression parameterExpression;
+		private readonly ParameterExpression parameterExpression;
 
 		public Parameter(ParameterExpression parameterExpression)
 		{
@@ -13,7 +13,18 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		public bool Writable
 		{
-			get { return false; }
+			get
+			{
+				return false;
+			}
+		}
+
+		public object Source
+		{
+			get
+			{
+				return null;
+			}
 		}
 
 		public string ToPathString()

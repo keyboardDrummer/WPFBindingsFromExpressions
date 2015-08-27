@@ -6,7 +6,7 @@ namespace WPFBindingGeneration
 {
 	public static class ExpressionTreeExtensions
 	{
-		const bool UseDebugCompile = true;
+		private const bool UseDebugCompile = true;
 
 		/// <summary>
 		/// In release mode, returns <c>expr.Compile()</c>.
@@ -50,24 +50,26 @@ namespace WPFBindingGeneration
 		/// threw an exception instead of something like "nullptr at
 		/// compiler generated method".
 		/// </summary>
-		public static Func<T, R> DebugCompile<T, R>(this Expression<Func<T, R>> expr)
+		public static Func<T, R> DebugCompile<T, R>(this Expression<Func<T, R>> expr, object extraInformation = null)
 		{
-			if (UseDebugCompile)
+			if (!UseDebugCompile)
 			{
-				var func = expr.Compile();
-				return x =>
-				{
-					try
-					{
-						return func(x);
-					}
-					catch (Exception e)
-					{
-						throw new TargetInvocationException(string.Format("An exception occurred in compiled expression \"{0}\".", expr), e);
-					}
-				};
+				return expr.Compile();
 			}
-			return expr.Compile();
+
+			var func = expr.Compile();
+			return x =>
+			{
+				try
+				{
+					return func(x);
+				}
+				catch (Exception e)
+				{
+					throw new TargetInvocationException(string.Format("An exception occurred in compiled expression \"{0}\". Extra information: {1}",
+						expr, extraInformation), e);
+				}
+			};
 		}
 	}
 }

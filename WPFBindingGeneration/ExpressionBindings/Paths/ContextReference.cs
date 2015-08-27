@@ -2,7 +2,7 @@
 {
 	class ContextReference : IPathElement
 	{
-		readonly object context;
+		private readonly object context;
 
 		public ContextReference(object context)
 		{
@@ -11,12 +11,26 @@
 
 		public object Context
 		{
-			get { return context; }
+			get
+			{
+				return context;
+			}
 		}
 
 		public bool Writable
 		{
-			get { return false; }
+			get
+			{
+				return false;
+			}
+		}
+
+		public object Source
+		{
+			get
+			{
+				return context;
+			}
 		}
 
 		public string ToPathString()

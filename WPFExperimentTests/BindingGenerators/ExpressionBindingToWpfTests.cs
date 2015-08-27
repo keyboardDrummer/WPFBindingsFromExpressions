@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using WPFBindingGeneration;
@@ -13,12 +14,82 @@ namespace WPFExperimentTests.BindingGenerators
 		static readonly Item staticItem = new Item(false);
 		static readonly Item staticItemWithChild = CreateItemWithChild(false, true);
 		ISet<Item> items;
+
+		public ExpressionBindingToWpfTests()
+		{
+			var subItem = new SubItem(true);
+			ActuallySubItem = subItem;
+			subItem.AnotherProperty = 3;
+		}
+
 		public string SomeText { get; set; }
 		public bool IsChecked { get; set; }
 
 		public static Item StaticItemProperty
 		{
 			get { return staticItem; }
+		}
+
+		public bool ProtectedSetBool { get; protected set; }
+
+		public Item ActuallySubItem { get; set; }
+
+		[Fact]
+		public void CastDisappearsInpath()
+		{
+			var staticProperty = ExpressionToBindingParser.OneWay(() => ((SubItem) ActuallySubItem).AnotherProperty);
+			var binding = (Binding) staticProperty.ToBindingBase();
+			Assert.Equal("ActuallySubItem.AnotherProperty", binding.Path.Path);
+		}
+
+		[Fact]
+		public void ParseBinaryType()
+		{
+			// ReSharper disable once IsExpressionAlwaysTrue
+			var staticProperty = ExpressionToBindingParser.OneWay(() => staticItem is Item);
+			Assert.True(staticProperty.Evaluate(Unit.Instance));
+
+			// ReSharper disable once IsExpressionAlwaysTrue
+			var staticProperty2 = ExpressionToBindingParser.OneWay(() => staticItem is object);
+			Assert.True(staticProperty2.Evaluate(Unit.Instance));
+		}
+
+		[Fact]
+		public void PathlessStaticField()
+		{
+			var staticProperty = ExpressionToBindingParser.OneWay(() => staticItem);
+			var binding = (Binding) staticProperty.ToBindingBase();
+			Assert.Equal(null, binding.Path);
+		}
+
+		[Fact]
+		public void VirtualGetOnlyProperty()
+		{
+			var containsMustAccept = new ContainsMustAccept();
+			// ReSharper disable once SimplifyConditionalTernaryExpression
+			var staticProperty = ExpressionToBindingParser.OneWay(() => BoolToVisibility(containsMustAccept == null ? false : containsMustAccept.MustAccept));
+			var binding = staticProperty.ToBindingBase();
+			var textBox = new TextBox();
+			Assert.Equal(Visibility.Visible, textBox.Visibility);
+			textBox.SetBinding(UIElement.VisibilityProperty, binding);
+			textBox.BeginInit();
+			textBox.EndInit();
+			Assert.Equal(Visibility.Collapsed, textBox.Visibility);
+			//var bindingExpression = textBox.GetBindingExpression(UIElement.VisibilityProperty);
+			//Assert.Equal(BindingStatus.Active, bindingExpression.Status);
+		}
+
+		static Visibility BoolToVisibility(bool visible)
+		{
+			return !visible ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		[Fact]
+		public void ProtectedSetMeansOneWay()
+		{
+			var staticProperty = ExpressionToBindingParser.OneWay(() => ProtectedSetBool);
+			var binding = (Binding) staticProperty.ToBindingBase();
+			Assert.Equal(BindingMode.OneWay, binding.Mode);
 		}
 
 		static Item CreateItemWithChild(bool isChecked, bool isChildCheck)
@@ -110,8 +181,8 @@ namespace WPFExperimentTests.BindingGenerators
 			items = new HashSet<Item> {item1, item2};
 			var expressionBinding = ExpressionToBindingParser.OneWay((Item x) => x.IsChecked && items.Contains(x));
 			var binding = (MultiBinding) expressionBinding.ToBindingBase();
-			Assert.True(binding.Bindings.OfType<Binding>().Any<Binding>(childBinding => childBinding.Path.Path == "IsChecked"));
-			Assert.True(binding.Bindings.OfType<Binding>().Any<Binding>(childBinding => childBinding.Path.Path == ""));
+			Assert.True(binding.Bindings.OfType<Binding>().Any(childBinding => childBinding.Path.Path == "IsChecked"));
+			Assert.True(binding.Bindings.OfType<Binding>().Any(childBinding => childBinding.Path.Path == ""));
 			Assert.Equal(true, expressionBinding.Evaluate(item1));
 			Assert.Equal(false, expressionBinding.Evaluate(item2));
 			Assert.Equal(false, expressionBinding.Evaluate(item3));
@@ -158,8 +229,8 @@ namespace WPFExperimentTests.BindingGenerators
 		{
 			var expressionBinding = ExpressionToBindingParser.OneWay((Item x) => x.ChildItem.SomeMethod(x.IsChecked).IsChecked);
 			var binding = (MultiBinding) expressionBinding.ToBindingBase();
-			Assert.True(binding.Bindings.OfType<Binding>().Any<Binding>(childBinding => childBinding.Path.Path == "ChildItem"));
-			Assert.True(binding.Bindings.OfType<Binding>().Any<Binding>(childBinding => childBinding.Path.Path == "IsChecked"));
+			Assert.True(binding.Bindings.OfType<Binding>().Any(childBinding => childBinding.Path.Path == "ChildItem"));
+			Assert.True(binding.Bindings.OfType<Binding>().Any(childBinding => childBinding.Path.Path == "IsChecked"));
 			var root = new Item(true);
 			root.ChildItem = new Item(false);
 			Assert.Equal(true, expressionBinding.Evaluate(root));

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
 namespace WPFBindingGeneration.ExpressionBindings.Converters
@@ -17,12 +18,25 @@ namespace WPFBindingGeneration.ExpressionBindings.Converters
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			var result = forward((T) value);
-			return result;
+			if (value == DependencyProperty.UnsetValue || (value != null && !(value is T)))
+			{
+				return DependencyProperty.UnsetValue;
+			}
+			return forward(value == null ? default(T) : (T)value);
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
+			if (backward == null)
+			{
+				throw new NotSupportedException(string.Format(
+					"DelegateConverter does not support two way bindings: source type = {0}, target type = {1}.",
+					typeof(T).Name, typeof(U).Name));
+			}
+			if (value == DependencyProperty.UnsetValue || (value != null && !(value is U)))
+			{
+				return DependencyProperty.UnsetValue;
+			}
 			return backward((U) value);
 		}
 	}
