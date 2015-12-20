@@ -71,7 +71,7 @@
       <Project>{e40418ab-f9ac-4492-b370-d95f76d8d94b}</Project>
       <Name>WPFBindingGeneration</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WPFExperiment\WPFBindingGenerationExample.csproj">
+    <ProjectReference Include="..\WPFBindingGenerationExample\WPFBindingGenerationExample.csproj">
       <Project>{557E046E-0BCB-4325-83EC-C03C7BDAD225}</Project>
       <Name>WPFBindingGenerationExample</Name>
     </ProjectReference>
