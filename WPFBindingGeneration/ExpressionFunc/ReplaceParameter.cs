@@ -5,9 +5,9 @@ namespace WPFBindingGeneration.ExpressionFunc
 	class ReplaceParameter : ExpressionVisitor
 	{
 		readonly ParameterExpression from;
-		readonly ParameterExpression to;
+		readonly Expression to;
 
-		public ReplaceParameter(ParameterExpression @from, ParameterExpression to)
+		public ReplaceParameter(ParameterExpression @from, Expression to)
 		{
 			this.@from = @from;
 			this.to = to;

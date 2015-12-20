@@ -20,7 +20,11 @@ namespace WPFBindingGeneration.ExpressionFunc
 
 		public override Type ContextType
 		{
-			get { return typeof (From); }
+			get
+			{
+				var type = typeof(From);
+				return type == typeof(Unit) ? null : type;
+			}
 		}
 
 		public override LambdaExpression ExpressionTree

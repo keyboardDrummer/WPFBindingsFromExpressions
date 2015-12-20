@@ -21,7 +21,13 @@ namespace WPFBindingGeneration.ExpressionFunc
 			return Expression.Invoke(Expression.Constant(compose), arguments);
 		}
 
-		public static IExpressionFunc<To> Compose<L, R, To>(IExpressionFunc<L> left, IExpressionFunc<R> right, Func<L, R, To> compose)
+		public static IExpressionFunc<From, To> Compose<From, Mid, To>(this IExpressionFunc<From, Mid> inner, IExpressionFunc<Mid, To> outer)
+		{
+			var newOuterBody = new ReplaceParameter(outer.ExpressionTree.Parameters[0], inner.ExpressionTree.Body).Visit(outer.ExpressionTree.Body);
+			return new ContextualExpression<From, To>(Expression.Lambda<Func<From, To>>(newOuterBody, inner.ExpressionTree.Parameters));
+		}
+
+		public static IExpressionFunc<From, To> Join<From, L, R, To>(IExpressionFunc<From, L> left, IExpressionFunc<From, R> right, Func<L, R, To> compose)
 		{
 			var leftTree = left.ExpressionTree;
 			var parameter = GetParameter(left, right);
@@ -35,25 +41,14 @@ namespace WPFBindingGeneration.ExpressionFunc
 				: new ReplaceParameter(rightTree.Parameters[0], parameter).Visit(rightTree.Body);
 
 			var convertBody = CreateCall(compose, newLeftBody, newRightBody);
-			var lambda = parameter == null ? Expression.Lambda(convertBody) : Expression.Lambda(convertBody, parameter);
-			return CreateExpressionFunc<To>(lambda);
+			if (parameter == null)
+			{
+				parameter = Expression.Parameter(typeof(Unit));
+			}
+			return new ContextualExpression<From, To>(Expression.Lambda<Func<From, To>>(convertBody, parameter));
 		}
 
-		static IExpressionFunc<To> CreateExpressionFunc<To>(LambdaExpression lambda)
-		{
-			if (lambda.Parameters.Any())
-			{
-				var type = typeof (ContextualExpression<,>).MakeGenericType(lambda.Parameters[0].Type, typeof (To));
-				return (IExpressionFunc<To>) type.GetConstructors()[0].Invoke(new object[] {lambda});
-			}
-			else
-			{
-				var type = typeof (ContextFreeExpression<>).MakeGenericType(typeof (To));
-				return (IExpressionFunc<To>) type.GetConstructors()[0].Invoke(new object[] {lambda});
-			}
-		}
-
-		static ParameterExpression GetParameter<L, R>(IExpressionFunc<L> left, IExpressionFunc<R> right)
+		static ParameterExpression GetParameter<From, L, R>(IExpressionFunc<From, L> left, IExpressionFunc<From, R> right)
 		{
 			if (left.ContextType != null && right.ContextType != null)
 			{

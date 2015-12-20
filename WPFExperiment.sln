@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFBindingGenerationExample", "WPFExperiment\WPFBindingGenerationExample.csproj", "{557E046E-0BCB-4325-83EC-C03C7BDAD225}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFBindingGenerationExample", "WPFBindingGenerationExample\WPFBindingGenerationExample.csproj", "{557E046E-0BCB-4325-83EC-C03C7BDAD225}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFBindingGenerationTests", "WPFExperimentTests\WPFBindingGenerationTests.csproj", "{BEF3B03C-6D1C-4262-8E24-4248677D2C59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFBindingGenerationTests", "WPFBindingGenerationTests\WPFBindingGenerationTests.csproj", "{BEF3B03C-6D1C-4262-8E24-4248677D2C59}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFBindingGeneration", "WPFBindingGeneration\WPFBindingGeneration.csproj", "{E40418AB-F9AC-4492-B370-D95F76D8D94B}"
 EndProject
