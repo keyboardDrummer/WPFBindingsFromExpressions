@@ -13,7 +13,9 @@
 		<Label Content ="Text:"></Label>
 		<TextBox Name="SomeTextBox"></TextBox>
 		<Label Content ="Same text:"></Label>
-		<TextBox Name="SomeTextBox2"></TextBox>
-		<CheckBox Name="CheckBox"  Content="IsChecked"/>
+        <TextBox Name="SomeTextBox2"></TextBox>
+        <Label Content ="Same text in label with postfix:"></Label>
+        <Label Content ="" Name="TextYouWroteLabel"/>
+        <CheckBox Name="CheckBox"  Content="IsChecked"/>
 	</StackPanel>
 </Window>

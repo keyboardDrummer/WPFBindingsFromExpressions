@@ -16,7 +16,7 @@ namespace WPFExperiment
 	{
 		readonly ISet<Item> checkedItems = new HashSet<Item>();
 		bool isChecked;
-		string someText;
+		string _inputText;
 
 		public MainWindow()
 		{
@@ -26,12 +26,12 @@ namespace WPFExperiment
 			ExpressionToBindingParser.TwoWay(() => IsChecked).Apply(CheckBox, ToggleButton.IsCheckedProperty);
 		}
 
-		public string SomeText
+		public string InputText
 		{
-			get { return someText; }
+			get { return _inputText; }
 			set
 			{
-				someText = value;
+				_inputText = value;
 				OnPropertyChanged();
 			}
 		}
@@ -50,10 +50,12 @@ namespace WPFExperiment
 
 		void AddTextExample()
 		{
-			SomeText = "jo";
-			ExpressionToBindingParser.TwoWay(() => SomeText).Apply(SomeTextBox, TextBox.TextProperty);
-			ExpressionToBindingParser.TwoWay(() => SomeText).Apply(SomeTextBox2, TextBox.TextProperty);
-		}
+			InputText = "jo";
+            ExpressionToBindingParser.TwoWay(() => InputText).Apply(SomeTextBox2, TextBox.TextProperty);
+
+            ExpressionToBindingParser.TwoWay(() => InputText).Apply(SomeTextBox, TextBox.TextProperty);
+            ExpressionToBindingParser.OneWay(() => "This is what you wrote: " + InputText).Apply(TextYouWroteLabel, ContentProperty);
+        }
 
 		[NotifyPropertyChangedInvocator]
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
