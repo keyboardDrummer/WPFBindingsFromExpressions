@@ -4,42 +4,43 @@ using WPFBindingGeneration.ExpressionBindings;
 
 namespace WPFBindingGeneration.ExpressionFunc
 {
-	public class ContextualExpression<From, To> : DefaultExpressionFunc<From, To>
+	public class ContextualExpression<TFrom, TTo> : IExpressionFunc<TFrom, TTo>
 	{
-		readonly Expression<Func<From, To>> tree;
+		readonly Expression<Func<TFrom, TTo>> tree;
 
-		public ContextualExpression(Expression<Func<From, To>> tree)
+		public ContextualExpression(Expression<Func<TFrom, TTo>> tree)
 		{
 			this.tree = tree;
 		}
 
-		public override IExpressionBinding<From, To> ExpressionBinding
-		{
-			get { return ExpressionToBindingParser.OneWay(tree); }
-		}
+		public IExpressionBinding<TFrom, TTo> ExpressionBinding => ExpressionToBindingParser.OneWay(tree);
 
-		public override Type ContextType
+		public Type ContextType
 		{
 			get
 			{
-				var type = typeof(From);
+				var type = typeof(TFrom);
 				return type == typeof(Unit) ? null : type;
 			}
 		}
 
-		public override LambdaExpression ExpressionTree
-		{
-			get { return tree; }
-		}
+		public LambdaExpression ExpressionTree => tree;
 
-		public override IExpressionFunc<From, NewTo> Convert<NewTo>(Func<To, NewTo> func)
+		public IExpressionFunc<TFrom, TNewTo> Convert<TNewTo>(Func<TTo, TNewTo> func)
 		{
 			var call = ExpressionFuncExtensions.CreateCall(func, tree.Body);
-			var newTree = Expression.Lambda<Func<From, NewTo>>(call, tree.Parameters);
-			return new ContextualExpression<From, NewTo>(newTree);
+			var newTree = Expression.Lambda<Func<TFrom, TNewTo>>(call, tree.Parameters);
+			return new ContextualExpression<TFrom, TNewTo>(newTree);
 		}
 
-		public override To Evaluate(From @from)
+		IExpressionBinding IExpressionFuncBase<TTo>.ExpressionBinding => ExpressionBinding;
+
+		IExpressionFuncBase<TNewTo> IExpressionFuncBase<TTo>.Convert<TNewTo>(Func<TTo, TNewTo> func)
+		{
+			return Convert(func);
+		}
+
+		public TTo Evaluate(TFrom @from)
 		{
 			return tree.DebugCompile()(from);
 		}

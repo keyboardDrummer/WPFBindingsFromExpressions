@@ -4,38 +4,30 @@ using WPFBindingGeneration.ExpressionBindings;
 
 namespace WPFBindingGeneration.ExpressionFunc
 {
-	public class ContextFreeExpression<To> : DefaultExpressionFunc<Unit, To>
+	public class ContextFreeExpression<TTo> : IExpressionFunc<TTo>
 	{
-		readonly Expression<Func<To>> tree;
+		readonly Expression<Func<TTo>> tree;
 
-		public ContextFreeExpression(Expression<Func<To>> tree)
+		public ContextFreeExpression(Expression<Func<TTo>> tree)
 		{
 			this.tree = tree;
 		}
 
-		public override IExpressionBinding<Unit, To> ExpressionBinding
-		{
-			get { return ExpressionToBindingParser.OneWay(tree); }
-		}
+		public LambdaExpression ExpressionTree => tree;
 
-		public override LambdaExpression ExpressionTree
-		{
-			get { return tree; }
-		}
+		public Type ContextType => null;
 
-		public override Type ContextType
-		{
-			get { return null; }
-		}
-
-		public override IExpressionFunc<Unit, NewTo> Convert<NewTo>(Func<To, NewTo> func)
+		public IExpressionFuncBase<TNewTo> Convert<TNewTo>(Func<TTo, TNewTo> func)
 		{
 			var call = ExpressionFuncExtensions.CreateCall(func, tree.Body);
-			var newTree = Expression.Lambda<Func<NewTo>>(call, tree.Parameters);
-			return new ContextFreeExpression<NewTo>(newTree);
+			var newTree = Expression.Lambda<Func<TNewTo>>(call, tree.Parameters);
+			return new ContextFreeExpression<TNewTo>(newTree);
 		}
 
-		public override To Evaluate(Unit @from)
+
+		public IExpressionBinding ExpressionBinding => ExpressionToBindingParser.OneWay(tree);
+
+		public TTo Evaluate()
 		{
 			return tree.DebugCompile()();
 		}

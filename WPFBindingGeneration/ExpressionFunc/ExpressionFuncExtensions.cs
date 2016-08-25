@@ -10,7 +10,7 @@ namespace WPFBindingGeneration.ExpressionFunc
 			return new ContextualExpression<TFrom, TTo>(expression);
 		}
 
-		public static IExpressionFunc<Unit, TTo> Create<TTo>(Expression<Func<TTo>> expression)
+		public static IExpressionFunc<TTo> Create<TTo>(Expression<Func<TTo>> expression)
 		{
 			return new ContextFreeExpression<TTo>(expression);
 		}

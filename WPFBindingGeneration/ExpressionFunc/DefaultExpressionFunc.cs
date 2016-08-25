@@ -4,12 +4,13 @@ using WPFBindingGeneration.ExpressionBindings;
 
 namespace WPFBindingGeneration.ExpressionFunc
 {
-	public abstract class DefaultExpressionFunc<From, To> : IExpressionFunc<From, To>
+	public abstract class DefaultExpressionFunc<TFrom, TTo> : IExpressionFunc<TFrom, TTo>
 	{
-		public abstract IExpressionFunc<From, NewTo> Convert<NewTo>(Func<To, NewTo> func);
-		public abstract To Evaluate(From @from);
+		public abstract TTo Evaluate(TFrom @from);
 		public abstract LambdaExpression ExpressionTree { get; }
 		public abstract Type ContextType { get; }
-		public abstract IExpressionBinding<From, To> ExpressionBinding { get; }
+		public abstract IExpressionFuncBase<TNewTo> Convert<TNewTo>(Func<TTo, TNewTo> func);
+		IExpressionBinding IExpressionFuncBase<TTo>.ExpressionBinding => ExpressionBinding;
+		public abstract IExpressionBinding<TFrom, TTo> ExpressionBinding { get; }
 	}
 }

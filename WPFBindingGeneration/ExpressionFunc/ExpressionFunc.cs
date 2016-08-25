@@ -4,7 +4,7 @@ using WPFBindingGeneration.ExpressionBindings;
 
 namespace WPFBindingGeneration.ExpressionFunc
 {
-	public interface IExpressionFunc<in From, To>
+	public interface IExpressionFuncBase<out TTo>
 	{
 		LambdaExpression ExpressionTree
 		{
@@ -16,12 +16,26 @@ namespace WPFBindingGeneration.ExpressionFunc
 			get;
 		}
 
-		IExpressionBinding<From, To> ExpressionBinding
+		IExpressionFuncBase<TNewTo> Convert<TNewTo>(Func<TTo, TNewTo> func);
+
+		IExpressionBinding ExpressionBinding
+		{
+			get;
+		}
+	}
+
+	public interface IExpressionFunc<TTo> : IExpressionFuncBase<TTo>
+	{
+		TTo Evaluate();
+	}
+
+	public interface IExpressionFunc<in TFrom, TTo> : IExpressionFuncBase<TTo>
+	{
+		new IExpressionBinding<TFrom, TTo> ExpressionBinding
 		{
 			get;
 		}
 
-		IExpressionFunc<From, NewTo> Convert<NewTo>(Func<To, NewTo> func);
-		To Evaluate(From from);
+		TTo Evaluate(TFrom from);
 	}
 }
