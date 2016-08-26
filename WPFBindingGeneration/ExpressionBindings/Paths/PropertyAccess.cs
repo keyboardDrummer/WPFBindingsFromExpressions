@@ -13,33 +13,16 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			this.inner = inner;
 		}
 
-		public PropertyInfo Property
-		{
-			get
-			{
-				return property;
-			}
-		}
+		public PropertyInfo Property => property;
 
-		public bool Writable
-		{
-			get
-			{
-				return property.GetSetMethod(false) != null;
-			}
-		}
+		public bool Writable => property.GetSetMethod(false) != null;
 
-		public object Source
-		{
-			get
-			{
-				return inner.Source;
-			}
-		}
+		public object Source => inner.Source;
 
 		public string ToPathString()
 		{
-			return inner.ToPathString() + "." + property.Name;
+			var innerString = inner.ToPathString();
+			return (string.IsNullOrEmpty(innerString) ? "" : (innerString + ".")) + property.Name;
 		}
 
 		public object Evaluate(object parameter)
