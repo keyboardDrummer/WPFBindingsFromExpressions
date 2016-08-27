@@ -95,7 +95,12 @@ namespace WPFBindingGeneration
 			var methodCall = expression as MethodCallExpression;
 			if (methodCall != null)
 			{
-				return ParseMethodCall(methodCall);
+				var path = PathExpressions.ParsePath(expression);
+				if (path == null)
+				{
+					return ParseMethodCall(methodCall);
+				}
+				return new ExtractPathsResult<Expression>(c => c(expression, expression.Type), expression);
 			}
 			var parameterExpression = expression as ParameterExpression;
 			if (parameterExpression != null)
