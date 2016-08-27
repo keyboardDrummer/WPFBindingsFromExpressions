@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
@@ -11,25 +12,13 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			this.parameterExpression = parameterExpression;
 		}
 
-		public bool Writable
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public bool Writable => false;
 
-		public object Source
-		{
-			get
-			{
-				return null;
-			}
-		}
+		public object Source => null;
 
-		public string ToPathString()
+		public PropertyPath ToPathString()
 		{
-			return "";
+			return new PropertyPath("");
 		}
 
 		public object Evaluate(object parameter)

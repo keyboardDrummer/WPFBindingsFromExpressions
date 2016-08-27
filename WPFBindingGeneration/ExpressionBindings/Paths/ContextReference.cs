@@ -1,46 +1,31 @@
-﻿namespace WPFBindingGeneration.ExpressionBindings.Paths
+﻿using System.Windows;
+
+namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
 	class ContextReference : IPathElement
 	{
-		private readonly object context;
-
 		public ContextReference(object context)
 		{
-			this.context = context;
+			Context = context;
 		}
 
 		public object Context
 		{
-			get
-			{
-				return context;
-			}
+			get;
 		}
 
-		public bool Writable
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public bool Writable => false;
 
-		public object Source
-		{
-			get
-			{
-				return context;
-			}
-		}
+		public object Source => Context;
 
-		public string ToPathString()
+		public PropertyPath ToPathString()
 		{
-			return "";
+			return new PropertyPath("");
 		}
 
 		public object Evaluate(object parameter)
 		{
-			return context;
+			return Context;
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace WPFBindingGeneration
         /// compiler generated method".
         /// </summary>
 #pragma warning disable 162
-        public static Func<R> DebugCompile<R>(this Expression<Func<R>> expr)
+        public static Func<R> DebugCompile<R>(this Expression<Func<R>> expr, object extraInformation = null)
 		{
 			if (UseDebugCompile)
 			{
@@ -31,9 +31,14 @@ namespace WPFBindingGeneration
 					{
 						return func();
 					}
+					catch (NullReferenceException e)
+					{
+						return default(R);
+					}
 					catch (Exception e)
 					{
-						throw new TargetInvocationException(string.Format("An exception occurred in compiled expression \"{0}\".", expr), e);
+						//return default(R);
+						throw new TargetInvocationException(string.Format("An exception occurred in compiled expression \"{0}\". {1}", expr, extraInformation), e);
 					}
 				};
 			}
@@ -67,10 +72,14 @@ namespace WPFBindingGeneration
 				{
 					return func(x);
 				}
+				catch (NullReferenceException e)
+				{
+					return default(R);
+				}
 				catch (Exception e)
 				{
-					throw new TargetInvocationException(string.Format("An exception occurred in compiled expression \"{0}\". Extra information: {1}",
-						expr, extraInformation), e);
+					//return default(R);
+					throw new TargetInvocationException(string.Format("An exception occurred in compiled expression \"{0}\". Extra information: {1}", expr, extraInformation), e);
 				}
 			};
         }

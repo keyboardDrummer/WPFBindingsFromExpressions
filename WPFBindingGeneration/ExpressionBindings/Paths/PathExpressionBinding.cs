@@ -40,7 +40,11 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		public Binding ToBinding()
 		{
 			var path = GetPath().ToPathString();
-			var result = !string.IsNullOrEmpty(path) ? new Binding(path) : new Binding();
+			var result = new Binding();
+			if (!string.IsNullOrEmpty(path.Path))
+			{
+				result.Path = path;
+			}
 			result.Mode = IsWritable ? BindingMode.TwoWay : BindingMode.OneWay;
 			var source = GetSource();
 			if (source != null)

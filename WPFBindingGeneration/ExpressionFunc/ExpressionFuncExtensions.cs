@@ -5,12 +5,12 @@ namespace WPFBindingGeneration.ExpressionFunc
 {
 	public static class ExpressionFuncExtensions
 	{
-		public static IExpressionFunc<TFrom, TTo> Create<TFrom, TTo>(Expression<Func<TFrom, TTo>> expression)
+		public static IContextualExpression<TFrom, TTo> Create<TFrom, TTo>(Expression<Func<TFrom, TTo>> expression)
 		{
 			return new ContextualExpression<TFrom, TTo>(expression);
 		}
 
-		public static IExpressionFunc<TTo> Create<TTo>(Expression<Func<TTo>> expression)
+		public static IContextFreeExpression<TTo> Create<TTo>(Expression<Func<TTo>> expression)
 		{
 			return new ContextFreeExpression<TTo>(expression);
 		}
@@ -20,14 +20,20 @@ namespace WPFBindingGeneration.ExpressionFunc
 			return Expression.Invoke(Expression.Constant(compose), arguments);
 		}
 
-		public static IExpressionFunc<TFrom, TTo> Compose<TFrom, TMid, TTo>(this IExpressionFunc<TFrom, TMid> inner, IExpressionFunc<TMid, TTo> outer)
+		public static IContextualExpression<TFrom, TTo> Compose<TFrom, TMid, TTo>(this IContextualExpression<TFrom, TMid> inner, IContextualExpression<TMid, TTo> outer)
 		{
 			var newOuterBody = new ReplaceParameter(outer.ExpressionTree.Parameters[0], inner.ExpressionTree.Body).Visit(outer.ExpressionTree.Body);
 			return new ContextualExpression<TFrom, TTo>(Expression.Lambda<Func<TFrom, TTo>>(newOuterBody, inner.ExpressionTree.Parameters));
 		}
 
-		public static IExpressionFunc<TFrom, TTo> Join<TFrom, TLeftMid, TRightMid, TTo>(
-			IExpressionFunc<TFrom, TLeftMid> left, IExpressionFunc<TFrom, TRightMid> right, Func<TLeftMid, TRightMid, TTo> compose)
+		public static IContextFreeExpression<TTo> Join<TLeftMid, TRightMid, TTo>(
+			IContextFreeExpression<TLeftMid> left, IContextFreeExpression<TRightMid> right, Func<TLeftMid, TRightMid, TTo> compose)
+		{
+			return new ContextFreeExpression<TTo>(Expression.Lambda<Func<TTo>>(CreateCall(compose, left.ExpressionTree.Body, right.ExpressionTree.Body)));
+		}
+
+		public static IContextualExpression<TFrom, TTo> Join<TFrom, TLeftMid, TRightMid, TTo>(
+			IContextualExpression<TFrom, TLeftMid> left, IContextualExpression<TFrom, TRightMid> right, Func<TLeftMid, TRightMid, TTo> compose)
 		{
 			var leftTree = left.ExpressionTree;
 			var parameter = GetParameter(left, right);
@@ -48,7 +54,7 @@ namespace WPFBindingGeneration.ExpressionFunc
 			return new ContextualExpression<TFrom, TTo>(Expression.Lambda<Func<TFrom, TTo>>(convertBody, parameter));
 		}
 
-		static ParameterExpression GetParameter<TFrom, TLeftMid, TRightMid>(IExpressionFunc<TFrom, TLeftMid> left, IExpressionFunc<TFrom, TRightMid> right)
+		static ParameterExpression GetParameter<TFrom, TLeftMid, TRightMid>(IContextualExpression<TFrom, TLeftMid> left, IContextualExpression<TFrom, TRightMid> right)
 		{
 			if (left.ContextType != null && right.ContextType != null)
 			{

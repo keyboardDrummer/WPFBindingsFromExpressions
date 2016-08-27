@@ -4,7 +4,7 @@ using WPFBindingGeneration.ExpressionBindings;
 
 namespace WPFBindingGeneration.ExpressionFunc
 {
-	public class ContextualExpression<TFrom, TTo> : IExpressionFunc<TFrom, TTo>
+	public class ContextualExpression<TFrom, TTo> : IContextualExpression<TFrom, TTo>
 	{
 		readonly Expression<Func<TFrom, TTo>> tree;
 
@@ -26,16 +26,16 @@ namespace WPFBindingGeneration.ExpressionFunc
 
 		public LambdaExpression ExpressionTree => tree;
 
-		public IExpressionFunc<TFrom, TNewTo> Convert<TNewTo>(Func<TTo, TNewTo> func)
+		public IContextualExpression<TFrom, TNewTo> Convert<TNewTo>(Func<TTo, TNewTo> func)
 		{
 			var call = ExpressionFuncExtensions.CreateCall(func, tree.Body);
 			var newTree = Expression.Lambda<Func<TFrom, TNewTo>>(call, tree.Parameters);
 			return new ContextualExpression<TFrom, TNewTo>(newTree);
 		}
 
-		IExpressionBinding IExpressionFuncBase<TTo>.ExpressionBinding => ExpressionBinding;
+		IExpressionBinding IExpressionFunction<TTo>.ExpressionBinding => ExpressionBinding;
 
-		IExpressionFuncBase<TNewTo> IExpressionFuncBase<TTo>.Convert<TNewTo>(Func<TTo, TNewTo> func)
+		IExpressionFunction<TNewTo> IExpressionFunction<TTo>.Convert<TNewTo>(Func<TTo, TNewTo> func)
 		{
 			return Convert(func);
 		}

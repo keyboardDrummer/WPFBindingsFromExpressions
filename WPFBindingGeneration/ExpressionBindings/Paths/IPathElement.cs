@@ -1,4 +1,6 @@
-﻿namespace WPFBindingGeneration.ExpressionBindings.Paths
+﻿using System.Windows;
+
+namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
 	public interface IPathElement
 	{
@@ -12,7 +14,7 @@
 			get;
 		}
 
-		string ToPathString();
+		PropertyPath ToPathString();
 		object Evaluate(object parameter);
 	}
 }

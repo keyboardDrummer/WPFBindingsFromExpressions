@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExpressionBindings\Paths\ContextReference.cs" />
+    <Compile Include="ExpressionBindings\Paths\IndexPath.cs" />
     <Compile Include="ExpressionBindings\Paths\PathExpressions.cs" />
     <Compile Include="ExpressionBindings\ExpressionToBindingParser.cs" />
     <Compile Include="ExpressionBindings\ConvertedPathExpressionBinding.cs" />

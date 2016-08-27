@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
@@ -19,10 +20,12 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		public object Source => inner.Source;
 
-		public string ToPathString()
+		public PropertyPath ToPathString()
 		{
-			var innerString = inner.ToPathString();
-			return (string.IsNullOrEmpty(innerString) ? "" : (innerString + ".")) + property.Name;
+			var innerPath = inner.ToPathString();
+			var innerString = innerPath.Path;
+			var prefix = string.IsNullOrEmpty(innerString) ? "" : innerString + ".";
+			return new PropertyPath(prefix + property.Name, innerPath.PathParameters);
 		}
 
 		public object Evaluate(object parameter)

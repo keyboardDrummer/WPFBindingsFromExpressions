@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -11,6 +12,20 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			{
 				var conversion = (UnaryExpression)expression;
 				return ParsePath(conversion.Operand);
+			}
+
+			var callExpression = expression as MethodCallExpression;
+			if (callExpression != null && callExpression.Method.Name == "get_Item")
+			{
+				var inner = ParsePath(callExpression.Object);
+				if (inner == null)
+				{
+					return null;
+				}
+				var getter = callExpression.Method;
+				var setter = getter.DeclaringType.GetProperties().Single(p => p.GetGetMethod().Equals(getter)).GetSetMethod();
+				var indices = callExpression.Arguments.Select(argument => Expression.Lambda(argument).Compile().DynamicInvoke()).ToArray();
+				return new IndexPath(inner, getter, setter, indices);
 			}
 
 			var memberExpression = expression as MemberExpression;
