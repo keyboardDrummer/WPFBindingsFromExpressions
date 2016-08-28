@@ -35,7 +35,7 @@ namespace WPFExperimentTests.ExpressionTree
 		{
 			var itemIsChecked = ExpressionFuncExtensions.Create((Item item) => item.IsChecked);
 			var isChildIsChecked = ExpressionFuncExtensions.Create((Item item) => item.ChildItem.IsChecked);
-			var andCombo = ExpressionFuncExtensions.Compose(itemIsChecked, isChildIsChecked, (a, b) => a && b);
+			var andCombo = ExpressionFuncExtensions.Join(itemIsChecked, isChildIsChecked, (a, b) => a && b);
 			var binding = (MultiBinding) andCombo.ExpressionBinding.ToBindingBase();
 			Assert.Equal(true, andCombo.Evaluate(CreateItemWithChild(true, true)));
 			Assert.Equal(false, andCombo.Evaluate(CreateItemWithChild(true, false)));
@@ -55,7 +55,7 @@ namespace WPFExperimentTests.ExpressionTree
 		{
 			var itemIsChecked = ExpressionFuncExtensions.Create((Item item) => item.IsChecked);
 			var isChildIsChecked = ExpressionFuncExtensions.Create(() => staticItemWithChild.ChildItem.IsChecked);
-			var andCombo = ExpressionFuncExtensions.Compose(itemIsChecked, isChildIsChecked, (a, b) => a && b);
+			var andCombo = ExpressionFuncExtensions.Join(itemIsChecked, isChildIsChecked, (a, b) => a && b);
 
 			Assert.Equal(true, andCombo.Evaluate(new Item(true)));
 			Assert.Equal(false, andCombo.Evaluate(new Item(false)));
