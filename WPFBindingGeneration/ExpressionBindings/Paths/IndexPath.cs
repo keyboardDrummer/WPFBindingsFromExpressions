@@ -34,8 +34,9 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		{
 			var innerPath = inner.ToPathString();
 			var innerParameters = innerPath.PathParameters;
-			var allParameters = innerParameters.Concat(_indices).ToList();
-			string path = $"{innerPath.Path}[{string.Join(",", _indices.Select((_, indexIndex) => $"({innerParameters.Count + indexIndex})"))}]";
+			var allParameters = innerParameters.Concat(_indices).ToArray();
+			var parametersString = string.Join(",", _indices.Select((_, indexIndex) => $"({innerParameters.Count + indexIndex})"));
+			string path = $"{innerPath.Path}[{parametersString}]";
 			return new PropertyPath(path, allParameters);
 		}
 
