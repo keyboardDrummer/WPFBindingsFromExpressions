@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using WPFBindingGeneration.ExpressionBindings.Paths;
 
 namespace WPFBindingGeneration
 {
@@ -18,31 +19,27 @@ namespace WPFBindingGeneration
 		}
 	}
 
-	delegate Expression CreatePathParameter(Expression path, Type type);
+	delegate Expression CreatePathParameter(IPathElement path, Type type);
 
 	class ExtractPathsResult<T>
 	{
 		readonly Func<CreatePathParameter, T> createExpression;
-		readonly Utility.SortedSet<Expression> paths;
+		readonly Utility.SortedSet<IPathElement> paths;
 
-		public ExtractPathsResult(Func<CreatePathParameter, T> createExpression, params Expression[] paths)
-			: this(createExpression, new Utility.SortedSet<Expression>(Comparer, paths))
+		public ExtractPathsResult(Func<CreatePathParameter, T> createExpression, params IPathElement[] paths)
+			: this(createExpression, new Utility.SortedSet<IPathElement>(Comparer, paths))
 		{
 		}
 
-		public ExtractPathsResult(Func<CreatePathParameter, T> createExpression, Utility.SortedSet<Expression> paths)
+		public ExtractPathsResult(Func<CreatePathParameter, T> createExpression, Utility.SortedSet<IPathElement> paths)
 		{
 			this.paths = paths;
 			this.createExpression = createExpression;
 		}
 
-		public static IEqualityComparer<Expression> Comparer
-		{
-			get { return EqualityComparer<Expression>.Default; //TODO bring back new ToStringEqualityComparer<Expression>();
-			}
-		}
+		public static IEqualityComparer<IPathElement> Comparer => EqualityComparer<IPathElement>.Default;
 
-		public Utility.SortedSet<Expression> Paths
+		public Utility.SortedSet<IPathElement> Paths
 		{
 			get { return paths; }
 		}
@@ -64,7 +61,7 @@ namespace WPFBindingGeneration
 
 		public ExtractPathsResult<R> Combine<U, R>(ExtractPathsResult<U> other, Func<T, U, R> merge)
 		{
-			var combinedPaths = new Utility.SortedSet<Expression>(Comparer);
+			var combinedPaths = new Utility.SortedSet<IPathElement>(Comparer);
 			foreach (var item in other.paths.Concat(paths))
 				combinedPaths.Add(item);
 

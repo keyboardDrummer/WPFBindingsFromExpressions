@@ -37,18 +37,16 @@ namespace WPFBindingGeneration
 		{
 			var result = ExtractPaths(func.Body);
 			var paths = result.Paths;
-			var parameter = func.Parameters[0];
-			var pathFuncs = paths.Select(path => Expression.Lambda(path, parameter)).ToList();
 
-			if (pathFuncs.Count == 1)
+			if (paths.Count == 1)
 			{
 				var objectParameter = Expression.Parameter(typeof(object));
 				var newBody = result.CreateExpression((path, type) => Expression.Convert(objectParameter, type));
 				if (IsEndPoint(newBody, objectParameter))
 				{
-					return new PathExpressionBinding<From, To>(pathFuncs[0]);
+					return new PathExpressionBinding<From, To>(paths[0]);
 				}
-				var pathBinding = new PathExpressionBinding<From, object>(pathFuncs[0]);
+				var pathBinding = new PathExpressionBinding<From, object>(paths[0]);
 				var converter = Expression.Lambda<Func<object, To>>(newBody, objectParameter).DebugCompile(func);
 				return pathBinding.Convert(converter);
 			}
@@ -61,7 +59,7 @@ namespace WPFBindingGeneration
 				var arrayParameterBody = result.CreateExpression((path, type) => GetArrayParameter(arrayParameter, pathIndices[path], type));
 
 				var converter = Expression.Lambda<Func<object[], To>>(arrayParameterBody, arrayParameter).DebugCompile(func);
-				return new MultiPathExpressionBinding<From, To>(pathFuncs, converter, null);
+				return new MultiPathExpressionBinding<From, To>(paths, converter, null);
 			}
 		}
 
@@ -81,6 +79,18 @@ namespace WPFBindingGeneration
 		/// </summary>
 		private static ExtractPathsResult<Expression> ExtractPaths(Expression expression)
 		{
+			var constant = expression as ConstantExpression;
+			if (constant != null)
+			{
+				return new ExtractPathsResult<Expression>(p => constant);
+			}
+
+			var path = PathExpressions.ParsePath(expression);
+			if (path != null)
+			{
+				return new ExtractPathsResult<Expression>(c => c(path, expression.Type), path);
+			}
+
 			var binaryExpression = expression as BinaryExpression;
 			if (binaryExpression != null)
 			{
@@ -95,27 +105,12 @@ namespace WPFBindingGeneration
 			var methodCall = expression as MethodCallExpression;
 			if (methodCall != null)
 			{
-				var path = PathExpressions.ParsePath(expression);
-				if (path == null)
-				{
-					return ParseMethodCall(methodCall);
-				}
-				return new ExtractPathsResult<Expression>(c => c(expression, expression.Type), expression);
-			}
-			var parameterExpression = expression as ParameterExpression;
-			if (parameterExpression != null)
-			{
-				return new ExtractPathsResult<Expression>(createParameter => createParameter(parameterExpression, parameterExpression.Type), parameterExpression);
+				return ParseMethodCall(methodCall);
 			}
 			var member = expression as MemberExpression;
 			if (member != null)
 			{
-				return ParseMemberExpression(member);
-			}
-			var constant = expression as ConstantExpression;
-			if (constant != null)
-			{
-				return new ExtractPathsResult<Expression>(p => constant);
+				return ExtractPaths(member.Expression).Select(newMember => (Expression)Expression.PropertyOrField(newMember, member.Member.Name));
 			}
 
 			var conditional = expression as ConditionalExpression;
@@ -188,16 +183,6 @@ namespace WPFBindingGeneration
 				? new ExtractPathsResult<Expression>(f => null)
 				: ExtractPaths(methodCall.Object);
 			return objectResult.Combine(argumentsResult, (newObject, newArguments) => (Expression)Expression.Call(newObject, methodCall.Method, newArguments));
-		}
-
-		private static ExtractPathsResult<Expression> ParseMemberExpression(MemberExpression member)
-		{
-			var pathExpression = PathExpressions.ParsePath(member);
-			if (pathExpression == null)
-			{
-				return ExtractPaths(member.Expression).Select(newMember => (Expression)Expression.PropertyOrField(newMember, member.Member.Name));
-			}
-			return new ExtractPathsResult<Expression>(createParameter => createParameter(member, member.Type), member);
 		}
 
 		private static Expression GetArrayParameter(ParameterExpression parameter, int index, Type type)

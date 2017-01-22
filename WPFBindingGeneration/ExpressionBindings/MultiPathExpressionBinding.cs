@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Windows.Data;
 using WPFBindingGeneration.ExpressionBindings.Converters;
 using WPFBindingGeneration.ExpressionBindings.Paths;
@@ -12,9 +11,9 @@ namespace WPFBindingGeneration.ExpressionBindings
 	{
 		readonly Func<To, object[]> backward;
 		readonly Func<object[], To> forward;
-		readonly IList<LambdaExpression> paths;
+		readonly IReadOnlyList<IPathElement> paths;
 
-		public MultiPathExpressionBinding(IList<LambdaExpression> paths, Func<object[], To> forward, Func<To, object[]> backward)
+		public MultiPathExpressionBinding(IReadOnlyList<IPathElement> paths, Func<object[], To> forward, Func<To, object[]> backward)
 		{
 			this.paths = paths;
 			this.forward = forward;
@@ -23,7 +22,7 @@ namespace WPFBindingGeneration.ExpressionBindings
 
 		public override bool IsWritable
 		{
-			get { return paths.All(path => new PathExpressionBinding<From, object>(path).IsWritable) && backward != null; }
+			get { return paths.All(path => path.Writable) && backward != null; }
 		}
 
 		IEnumerable<PathExpressionBinding<From, object>> PathExpressionBindings

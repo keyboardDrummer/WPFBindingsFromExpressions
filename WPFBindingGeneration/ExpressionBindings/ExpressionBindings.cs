@@ -21,7 +21,7 @@ namespace WPFBindingGeneration.ExpressionBindings
 
 		public static PathExpressionBinding<From, To> Path<From, To>(Expression<Func<From, To>> func)
 		{
-			return new PathExpressionBinding<From, To>(func);
+			return new PathExpressionBinding<From, To>(PathExpressions.ParsePath(func));
 		}
 
 		public static IExpressionBinding<From, To> Convert<From, To>(Func<From, To> func)

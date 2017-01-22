@@ -6,9 +6,9 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
 	public class PathExpressionBinding<From, To> : DefaultExpressionBinding<From, To>
 	{
-		private readonly LambdaExpression func;
+		private readonly IPathElement func;
 
-		public PathExpressionBinding(LambdaExpression func)
+		public PathExpressionBinding(IPathElement func)
 		{
 			this.func = func;
 		}
@@ -56,7 +56,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		private IPathElement GetPath()
 		{
-			return PathExpressions.ParsePath(func.Body);
+			return func;
 		}
 
 		public override IExpressionBinding<From, NewTo> Convert<NewTo>(Func<To, NewTo> forward = null, Func<NewTo, To> backward = null)
