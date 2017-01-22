@@ -11,9 +11,9 @@ namespace WPFBindingGeneration.ExpressionBindings
 	{
 		readonly Func<To, object[]> backward;
 		readonly Func<object[], To> forward;
-		readonly IReadOnlyList<IPathElement> paths;
+		readonly IReadOnlyList<IPathExpression> paths;
 
-		public MultiPathExpressionBinding(IReadOnlyList<IPathElement> paths, Func<object[], To> forward, Func<To, object[]> backward)
+		public MultiPathExpressionBinding(IReadOnlyList<IPathExpression> paths, Func<object[], To> forward, Func<To, object[]> backward)
 		{
 			this.paths = paths;
 			this.forward = forward;

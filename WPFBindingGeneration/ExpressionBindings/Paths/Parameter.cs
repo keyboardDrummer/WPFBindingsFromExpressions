@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-	class Parameter : IPathElement
+	class Parameter : IPathExpression
 	{
 		private readonly ParameterExpression parameterExpression;
 
@@ -16,7 +16,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		public object Source => null;
 
-		public PropertyPath ToPathString()
+		public PropertyPath ToPropertyPath()
 		{
 			return new PropertyPath("");
 		}

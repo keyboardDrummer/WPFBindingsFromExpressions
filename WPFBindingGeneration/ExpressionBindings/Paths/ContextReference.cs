@@ -2,7 +2,7 @@
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-	class ContextReference : IPathElement
+	class ContextReference : IPathExpression
 	{
 		public ContextReference(object context)
 		{
@@ -18,7 +18,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		public object Source => Context;
 
-		public PropertyPath ToPathString()
+		public PropertyPath ToPropertyPath()
 		{
 			return new PropertyPath("");
 		}

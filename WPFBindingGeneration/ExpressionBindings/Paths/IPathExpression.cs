@@ -2,7 +2,10 @@
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-	public interface IPathElement
+	/// <summary>
+	/// An expression that has the form of a path, such as A.B.C
+	/// </summary>
+	public interface IPathExpression
 	{
 		bool Writable
 		{
@@ -14,7 +17,8 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			get;
 		}
 
-		PropertyPath ToPathString();
+		PropertyPath ToPropertyPath();
+
 		object Evaluate(object parameter);
 	}
 }

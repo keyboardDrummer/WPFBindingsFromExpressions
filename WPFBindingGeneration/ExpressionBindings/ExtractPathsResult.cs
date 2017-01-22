@@ -19,27 +19,27 @@ namespace WPFBindingGeneration
 		}
 	}
 
-	delegate Expression CreatePathParameter(IPathElement path, Type type);
+	delegate Expression CreatePathParameter(IPathExpression path, Type type);
 
 	class ExtractPathsResult<T>
 	{
 		readonly Func<CreatePathParameter, T> createExpression;
-		readonly Utility.SortedSet<IPathElement> paths;
+		readonly Utility.SortedSet<IPathExpression> paths;
 
-		public ExtractPathsResult(Func<CreatePathParameter, T> createExpression, params IPathElement[] paths)
-			: this(createExpression, new Utility.SortedSet<IPathElement>(Comparer, paths))
+		public ExtractPathsResult(Func<CreatePathParameter, T> createExpression, params IPathExpression[] paths)
+			: this(createExpression, new Utility.SortedSet<IPathExpression>(Comparer, paths))
 		{
 		}
 
-		public ExtractPathsResult(Func<CreatePathParameter, T> createExpression, Utility.SortedSet<IPathElement> paths)
+		public ExtractPathsResult(Func<CreatePathParameter, T> createExpression, Utility.SortedSet<IPathExpression> paths)
 		{
 			this.paths = paths;
 			this.createExpression = createExpression;
 		}
 
-		public static IEqualityComparer<IPathElement> Comparer => EqualityComparer<IPathElement>.Default;
+		public static IEqualityComparer<IPathExpression> Comparer => EqualityComparer<IPathExpression>.Default;
 
-		public Utility.SortedSet<IPathElement> Paths
+		public Utility.SortedSet<IPathExpression> Paths
 		{
 			get { return paths; }
 		}
@@ -61,7 +61,7 @@ namespace WPFBindingGeneration
 
 		public ExtractPathsResult<R> Combine<U, R>(ExtractPathsResult<U> other, Func<T, U, R> merge)
 		{
-			var combinedPaths = new Utility.SortedSet<IPathElement>(Comparer);
+			var combinedPaths = new Utility.SortedSet<IPathExpression>(Comparer);
 			foreach (var item in other.paths.Concat(paths))
 				combinedPaths.Add(item);
 

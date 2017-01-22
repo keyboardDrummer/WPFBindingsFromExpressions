@@ -4,12 +4,12 @@ using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-	class PropertyAccess : IPathElement
+	class PropertyAccess : IPathExpression
 	{
 		private readonly PropertyInfo property;
-		private readonly IPathElement inner;
+		private readonly IPathExpression inner;
 
-		public PropertyAccess(PropertyInfo property, IPathElement inner)
+		public PropertyAccess(PropertyInfo property, IPathExpression inner)
 		{
 			this.property = property;
 			this.inner = inner;
@@ -17,24 +17,13 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		public PropertyInfo Property => property;
 
-		public bool Writable
-		{
-			get
-			{
-				if (property.Name.Contains("Header"))
-				{
-					int b = 0;
-					b++;
-				}
-				return property.GetSetMethod(false) != null;
-			}
-		}
+		public bool Writable => property.GetSetMethod(false) != null;
 
 		public object Source => inner.Source;
 
-		public PropertyPath ToPathString()
+		public PropertyPath ToPropertyPath()
 		{
-			var innerPath = inner.ToPathString();
+			var innerPath = inner.ToPropertyPath();
 			var innerString = innerPath.Path;
 			var separator = string.IsNullOrEmpty(innerString) || inner is CurrentPath ? "" : ".";
 			var prefix = innerString + separator;

@@ -6,9 +6,9 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
 	public class PathExpressionBinding<From, To> : DefaultExpressionBinding<From, To>
 	{
-		private readonly IPathElement func;
+		private readonly IPathExpression func;
 
-		public PathExpressionBinding(IPathElement func)
+		public PathExpressionBinding(IPathExpression func)
 		{
 			this.func = func;
 		}
@@ -33,7 +33,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		public Binding ToBinding()
 		{
-			var path = GetPath().ToPathString();
+			var path = GetPath().ToPropertyPath();
 			var result = new Binding();
 			if (!string.IsNullOrEmpty(path.Path))
 			{
@@ -54,7 +54,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			return ToBinding();
 		}
 
-		private IPathElement GetPath()
+		private IPathExpression GetPath()
 		{
 			return func;
 		}

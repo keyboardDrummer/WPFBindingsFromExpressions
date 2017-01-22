@@ -8,7 +8,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 	{
 		public static readonly MethodInfo CurrentMethod = typeof(CurrentExtension).GetMethod(nameof(CurrentExtension.Current));
 
-		public static IPathElement ParsePath(Expression expression)
+		public static IPathExpression ParsePath(Expression expression)
 		{
 			if (expression == null)
 			{

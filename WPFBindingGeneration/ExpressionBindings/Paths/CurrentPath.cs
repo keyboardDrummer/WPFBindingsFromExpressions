@@ -4,11 +4,11 @@ using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-	class CurrentPath : IPathElement
+	class CurrentPath : IPathExpression
 	{
-		private readonly IPathElement inner;
+		private readonly IPathExpression inner;
 
-		public CurrentPath(IPathElement inner)
+		public CurrentPath(IPathExpression inner)
 		{
 			this.inner = inner;
 		}
@@ -17,9 +17,9 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		public object Source => inner.Source;
 
-		public PropertyPath ToPathString()
+		public PropertyPath ToPropertyPath()
 		{
-			var innerPath = inner.ToPathString();
+			var innerPath = inner.ToPropertyPath();
 			var innerString = innerPath.Path;
 			return new PropertyPath(string.IsNullOrEmpty(innerString) ? "" : innerString + "/", innerPath.PathParameters?.ToArray());
 		}

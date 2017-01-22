@@ -56,7 +56,7 @@
     <Compile Include="ExpressionBindings\ExpressionBindings.cs" />
     <Compile Include="ExpressionBindings\IExpressionBinding.cs" />
     <Compile Include="ExpressionBindings\MultiPathExpressionBinding.cs" />
-    <Compile Include="ExpressionBindings\Paths\IPathElement.cs" />
+    <Compile Include="ExpressionBindings\Paths\IPathExpression.cs" />
     <Compile Include="ExpressionBindings\Paths\Parameter.cs" />
     <Compile Include="ExpressionBindings\Paths\PathExpressionBinding.cs" />
     <Compile Include="ExpressionBindings\Paths\PropertyAccess.cs" />
