@@ -68,7 +68,7 @@
     <Compile Include="ExpressionFunc\ExpressionFunc.cs" />
     <Compile Include="ExpressionFunc\ReplaceParameter.cs" />
     <Compile Include="ExpressionTreeExtensions.cs" />
-    <Compile Include="ExpressionBindings\PathsAndReduceExpression.cs" />
+    <Compile Include="ExpressionBindings\PathsAndPathReducer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="Utility\SortedSet.cs" />
