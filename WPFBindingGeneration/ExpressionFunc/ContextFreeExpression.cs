@@ -23,8 +23,7 @@ namespace WPFBindingGeneration.ExpressionFunc
 			var newTree = Expression.Lambda<Func<TNewTo>>(call, tree.Parameters);
 			return new ContextFreeExpression<TNewTo>(newTree);
 		}
-
-
+		
 		public IExpressionBinding ExpressionBinding => ExpressionToBindingParser.OneWay(tree);
 
 		public TTo Evaluate()

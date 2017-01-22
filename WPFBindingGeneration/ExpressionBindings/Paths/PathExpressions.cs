@@ -6,8 +6,15 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
 	public static class PathExpressions
 	{
+		public static readonly MethodInfo CurrentMethod = typeof(CurrentExtension).GetMethod(nameof(CurrentExtension.Current));
+
 		public static IPathElement ParsePath(Expression expression)
 		{
+			if (expression == null)
+			{
+				return null;
+			}
+
 			if (expression.NodeType == ExpressionType.Convert)
 			{
 				var conversion = (UnaryExpression)expression;
@@ -15,17 +22,35 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			}
 
 			var callExpression = expression as MethodCallExpression;
-			if (callExpression != null && callExpression.Method.Name == "get_Item")
+			if (callExpression != null)
 			{
-				var inner = ParsePath(callExpression.Object);
-				if (inner == null)
+				var callExpressionMethod = callExpression.Method;
+				var methodInfo = callExpressionMethod.IsGenericMethod ? callExpressionMethod.GetGenericMethodDefinition() : callExpressionMethod;
+				if (methodInfo == CurrentMethod)
 				{
-					return null;
+					var inner = ParsePath(callExpression.Arguments[0]);
+					if (inner == null)
+					{
+						return null;
+					}
+					else
+					{
+						return new CurrentPath(inner);
+					}
 				}
-				var getter = callExpression.Method;
-				var setter = getter.DeclaringType.GetProperties().Single(p => p.GetGetMethod().Equals(getter)).GetSetMethod();
-				var indices = callExpression.Arguments.Select(argument => Expression.Lambda(argument).Compile().DynamicInvoke()).ToArray();
-				return new IndexPath(inner, getter, setter, indices);
+
+				if (callExpressionMethod.Name == "get_Item")
+				{
+					var inner = ParsePath(callExpression.Object);
+					if (inner == null)
+					{
+						return null;
+					}
+					var getter = callExpressionMethod;
+					var setter = getter.DeclaringType.GetProperties().Single(p => p.GetGetMethod().Equals(getter)).GetSetMethod();
+					var indices = callExpression.Arguments.Select(argument => Expression.Lambda(argument).Compile().DynamicInvoke()).ToArray();
+					return new IndexPath(inner, getter, setter, indices);
+				}
 			}
 
 			var memberExpression = expression as MemberExpression;

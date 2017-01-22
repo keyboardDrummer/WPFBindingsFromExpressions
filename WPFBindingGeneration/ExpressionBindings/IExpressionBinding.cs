@@ -12,7 +12,7 @@ namespace WPFBindingGeneration.ExpressionBindings
 	}
 
 	/// <summary>
-	/// Provides a thin layer over WPF bindings. Replaced the String expression paths with expression trees.
+	/// Provides a thin layer over WPF bindings. Stores expression paths as expression trees instead of strings.
 	/// Includes an evaluate method for targets other than WPF.
 	/// </summary>
 	public interface IExpressionBinding<in From, To> : IExpressionBinding

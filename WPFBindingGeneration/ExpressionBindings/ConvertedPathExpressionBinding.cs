@@ -18,10 +18,7 @@ namespace WPFBindingGeneration.ExpressionBindings
 			this.backward = backward;
 		}
 
-		public override bool IsWritable
-		{
-			get { return pathExpression.IsWritable && backward != null; }
-		}
+		public override bool IsWritable => pathExpression.IsWritable && backward != null;
 
 		public override To Evaluate(From @from)
 		{
@@ -31,6 +28,7 @@ namespace WPFBindingGeneration.ExpressionBindings
 		public override BindingBase ToBindingBase()
 		{
 			var result = pathExpression.ToBinding();
+			result.Mode = IsWritable ? BindingMode.TwoWay : BindingMode.OneWay;
 			result.Converter = new ValueConverterFromDelegate<OldTo, To>(forward, backward);
 			return result;
 		}

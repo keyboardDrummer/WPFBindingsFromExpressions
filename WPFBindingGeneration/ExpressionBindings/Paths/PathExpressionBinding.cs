@@ -13,13 +13,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			this.func = func;
 		}
 
-		public override bool IsWritable
-		{
-			get
-			{
-				return GetPath().Writable;
-			}
-		}
+		public override bool IsWritable => GetPath().Writable;
 
 		private object GetSource()
 		{

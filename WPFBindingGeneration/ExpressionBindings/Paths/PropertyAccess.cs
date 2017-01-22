@@ -17,7 +17,18 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		public PropertyInfo Property => property;
 
-		public bool Writable => property.GetSetMethod(false) != null;
+		public bool Writable
+		{
+			get
+			{
+				if (property.Name.Contains("Header"))
+				{
+					int b = 0;
+					b++;
+				}
+				return property.GetSetMethod(false) != null;
+			}
+		}
 
 		public object Source => inner.Source;
 
@@ -25,7 +36,8 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		{
 			var innerPath = inner.ToPathString();
 			var innerString = innerPath.Path;
-			var prefix = string.IsNullOrEmpty(innerString) ? "" : innerString + ".";
+			var separator = string.IsNullOrEmpty(innerString) || inner is CurrentPath ? "" : ".";
+			var prefix = innerString + separator;
 			return new PropertyPath(prefix + property.Name, innerPath.PathParameters?.ToArray());
 		}
 
