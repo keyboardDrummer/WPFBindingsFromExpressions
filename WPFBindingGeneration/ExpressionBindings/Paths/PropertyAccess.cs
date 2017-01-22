@@ -6,18 +6,20 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
 	class PropertyAccess : IPathExpression
 	{
-		private readonly PropertyInfo property;
 		private readonly IPathExpression inner;
 
 		public PropertyAccess(PropertyInfo property, IPathExpression inner)
 		{
-			this.property = property;
+			this.Property = property;
 			this.inner = inner;
 		}
 
-		public PropertyInfo Property => property;
+		public PropertyInfo Property
+		{
+			get;
+		}
 
-		public bool Writable => property.GetSetMethod(false) != null;
+		public bool Writable => Property.GetSetMethod(false) != null;
 
 		public object Source => inner.Source;
 
@@ -27,7 +29,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			var innerString = innerPath.Path;
 			var separator = string.IsNullOrEmpty(innerString) || inner is CurrentPath ? "" : ".";
 			var prefix = innerString + separator;
-			return new PropertyPath(prefix + property.Name, innerPath.PathParameters?.ToArray());
+			return new PropertyPath(prefix + Property.Name, innerPath.PathParameters?.ToArray());
 		}
 
 		public object Evaluate(object parameter)
