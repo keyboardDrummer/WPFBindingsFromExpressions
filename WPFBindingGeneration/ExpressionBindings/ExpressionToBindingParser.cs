@@ -54,7 +54,7 @@ namespace WPFBindingGeneration
 			{
 				var arrayParameter = Expression.Parameter(typeof(object[]));
 				var pathIndices = paths.Select((e, i) => Tuple.Create(e, i)).
-					ToDictionary(t => t.Item1, t => t.Item2, PathsAndPathReducer<Expression>.Comparer);
+					ToDictionary(t => t.Item1, t => t.Item2, ExtractPathResult<Expression>.Comparer);
 
 				var arrayParameterBody = result.CreateExpression((path, type) => GetArrayParameter(arrayParameter, pathIndices[path], type));
 
@@ -77,18 +77,18 @@ namespace WPFBindingGeneration
 		/// <summary>
 		/// Returns an updated expression with all the paths replaced by parameters.
 		/// </summary>
-		private static PathsAndPathReducer<Expression> ExtractPaths(Expression expression)
+		private static ExtractPathResult<Expression> ExtractPaths(Expression expression)
 		{
 			var constant = expression as ConstantExpression;
 			if (constant != null)
 			{
-				return new PathsAndPathReducer<Expression>(p => constant);
+				return new ExtractPathResult<Expression>(p => constant);
 			}
 
 			var path = PathExpressions.ParsePath(expression);
 			if (path != null)
 			{
-				return new PathsAndPathReducer<Expression>(c => c(path, expression.Type), path);
+				return new ExtractPathResult<Expression>(c => c(path, expression.Type), path);
 			}
 
 			var binaryExpression = expression as BinaryExpression;
@@ -132,7 +132,7 @@ namespace WPFBindingGeneration
 			throw new NotImplementedException();
 		}
 
-		private static PathsAndPathReducer<Expression> ParseConditional(ConditionalExpression conditional)
+		private static ExtractPathResult<Expression> ParseConditional(ConditionalExpression conditional)
 		{
 			var conditionResult = ExtractPaths(conditional.Test);
 			var thenResult = ExtractPaths(conditional.IfTrue);
@@ -141,15 +141,15 @@ namespace WPFBindingGeneration
 				(thenAndElse, condition) => (Expression)Expression.Condition(condition, thenAndElse.Item1, thenAndElse.Item2, conditional.Type));
 		}
 
-		private static PathsAndPathReducer<Expression> ParseInvocation(InvocationExpression invoke)
+		private static ExtractPathResult<Expression> ParseInvocation(InvocationExpression invoke)
 		{
 			var argumentResults = invoke.Arguments.Select(ExtractPaths);
-			var argumentsResult = PathsAndPathReducer<Expression>.Flatten(argumentResults);
+			var argumentsResult = ExtractPathResult<Expression>.Flatten(argumentResults);
 			var expressionResult = ExtractPaths(invoke.Expression);
 			return expressionResult.Combine(argumentsResult, (newObject, newArguments) => (Expression)Expression.Invoke(newObject, newArguments));
 		}
 
-		private static PathsAndPathReducer<Expression> ParseBinaryType(TypeBinaryExpression binaryType)
+		private static ExtractPathResult<Expression> ParseBinaryType(TypeBinaryExpression binaryType)
 		{
 			return ExtractPaths(binaryType.Expression).Select<Expression>(newExpression =>
 			{
@@ -167,7 +167,7 @@ namespace WPFBindingGeneration
 			});
 		}
 
-		private static PathsAndPathReducer<Expression> ParseBinary(BinaryExpression binaryExpression)
+		private static ExtractPathResult<Expression> ParseBinary(BinaryExpression binaryExpression)
 		{
 			var leftResult = ExtractPaths(binaryExpression.Left);
 			var rightResult = ExtractPaths(binaryExpression.Right);
@@ -175,12 +175,12 @@ namespace WPFBindingGeneration
 				binaryExpression.IsLiftedToNull, binaryExpression.Method));
 		}
 
-		private static PathsAndPathReducer<Expression> ParseMethodCall(MethodCallExpression methodCall)
+		private static ExtractPathResult<Expression> ParseMethodCall(MethodCallExpression methodCall)
 		{
 			var argumentResults = methodCall.Arguments.Select(ExtractPaths);
-			var argumentsResult = PathsAndPathReducer<Expression>.Flatten(argumentResults);
+			var argumentsResult = ExtractPathResult<Expression>.Flatten(argumentResults);
 			var objectResult = methodCall.Object == null
-				? new PathsAndPathReducer<Expression>(f => null)
+				? new ExtractPathResult<Expression>(f => null)
 				: ExtractPaths(methodCall.Object);
 			return objectResult.Combine(argumentsResult, (newObject, newArguments) => (Expression)Expression.Call(newObject, methodCall.Method, newArguments));
 		}

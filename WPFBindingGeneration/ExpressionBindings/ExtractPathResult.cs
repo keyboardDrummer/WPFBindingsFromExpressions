@@ -9,16 +9,16 @@ namespace WPFBindingGeneration
 	delegate Expression CreatePathParameter(IPathExpression path, Type type);
 
 	/// <summary>
-	/// Contains a set of paths and a function to build a T that takes the results of those paths as input.
+	/// The result of extracting paths from an expression.
 	/// </summary>
-	class PathsAndPathReducer<T>
+	class ExtractPathResult<T>
 	{
-		public PathsAndPathReducer(Func<CreatePathParameter, T> createExpression, params IPathExpression[] paths)
+		public ExtractPathResult(Func<CreatePathParameter, T> createExpression, params IPathExpression[] paths)
 			: this(createExpression, new Utility.SortedSet<IPathExpression>(Comparer, paths))
 		{
 		}
 
-		public PathsAndPathReducer(Func<CreatePathParameter, T> createExpression, Utility.SortedSet<IPathExpression> paths)
+		public ExtractPathResult(Func<CreatePathParameter, T> createExpression, Utility.SortedSet<IPathExpression> paths)
 		{
 			Paths = paths;
 			CreateExpression = createExpression;
@@ -36,9 +36,9 @@ namespace WPFBindingGeneration
 			get;
 		}
 
-		public static PathsAndPathReducer<IEnumerable<T>> Flatten(IEnumerable<PathsAndPathReducer<T>> input)
+		public static ExtractPathResult<IEnumerable<T>> Flatten(IEnumerable<ExtractPathResult<T>> input)
 		{
-			var seed = new PathsAndPathReducer<IEnumerable<T>>(c => Enumerable.Empty<T>());
+			var seed = new ExtractPathResult<IEnumerable<T>>(c => Enumerable.Empty<T>());
 			return input.Aggregate(seed, (results, result) => results.Combine(result, (items, item) =>
 			{
 			    IEnumerable<T> enumerable = items.Concat(new[] {item});
@@ -46,18 +46,18 @@ namespace WPFBindingGeneration
 			}));
 		}
 
-		public PathsAndPathReducer<R> Combine<U, R>(PathsAndPathReducer<U> other, Func<T, U, R> merge)
+		public ExtractPathResult<R> Combine<U, R>(ExtractPathResult<U> other, Func<T, U, R> merge)
 		{
 			var combinedPaths = new Utility.SortedSet<IPathExpression>(Comparer);
 			foreach (var item in other.Paths.Concat(Paths))
 				combinedPaths.Add(item);
 
-			return new PathsAndPathReducer<R>(c => merge(CreateExpression(c), other.CreateExpression(c)), combinedPaths);
+			return new ExtractPathResult<R>(c => merge(CreateExpression(c), other.CreateExpression(c)), combinedPaths);
 		}
 
-		public PathsAndPathReducer<U> Select<U>(Func<T, U> func)
+		public ExtractPathResult<U> Select<U>(Func<T, U> func)
 		{
-			return new PathsAndPathReducer<U>(c => func(CreateExpression(c)), Paths);
+			return new ExtractPathResult<U>(c => func(CreateExpression(c)), Paths);
 		}
 	}
 }
