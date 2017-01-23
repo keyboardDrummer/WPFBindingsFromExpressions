@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-	class PropertyAccess : IPathExpression
+	class PropertyAccess : PathExpression
 	{
 		private readonly IPathExpression inner;
 
@@ -19,11 +19,11 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			get;
 		}
 
-		public bool Writable => Property.GetSetMethod(false) != null;
+		public override bool Writable => Property.GetSetMethod(false) != null;
 
-		public object Source => inner.Source;
+		public override object Source => inner.Source;
 
-		public PropertyPath ToPropertyPath()
+		public override PropertyPath ToPropertyPath()
 		{
 			var innerPath = inner.ToPropertyPath();
 			var innerString = innerPath.Path;
@@ -32,7 +32,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			return new PropertyPath(prefix + Property.Name, innerPath.PathParameters?.ToArray());
 		}
 
-		public object Evaluate(object parameter)
+		public override object Evaluate(object parameter)
 		{
 			var innerValue = inner.Evaluate(parameter);
 			if (innerValue == null)

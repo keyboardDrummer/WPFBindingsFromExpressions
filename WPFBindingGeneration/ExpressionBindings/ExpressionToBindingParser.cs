@@ -38,6 +38,7 @@ namespace WPFBindingGeneration
 			var result = ExtractPaths(func.Body);
 			var paths = result.Paths;
 
+			var extraInformation = Tuple.Create(result, func);
 			if (paths.Count == 1)
 			{
 				var objectParameter = Expression.Parameter(typeof(object));
@@ -47,7 +48,7 @@ namespace WPFBindingGeneration
 					return new PathExpressionBinding<From, To>(paths[0]);
 				}
 				var pathBinding = new PathExpressionBinding<From, object>(paths[0]);
-				var converter = Expression.Lambda<Func<object, To>>(newBody, objectParameter).DebugCompile(func);
+				var converter = Expression.Lambda<Func<object, To>>(newBody, objectParameter).DebugCompile(extraInformation);
 				return pathBinding.Convert(converter);
 			}
 			else
@@ -58,7 +59,7 @@ namespace WPFBindingGeneration
 
 				var arrayParameterBody = result.CreateExpression((path, type) => GetArrayParameter(arrayParameter, pathIndices[path], type));
 
-				var converter = Expression.Lambda<Func<object[], To>>(arrayParameterBody, arrayParameter).DebugCompile(func);
+				var converter = Expression.Lambda<Func<object[], To>>(arrayParameterBody, arrayParameter).DebugCompile(extraInformation);
 				return new MultiPathExpressionBinding<From, To>(paths, converter, null);
 			}
 		}

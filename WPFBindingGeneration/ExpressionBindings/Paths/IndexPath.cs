@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-	class IndexPath : IPathExpression
+	class IndexPath : PathExpression
 	{
 		private readonly IPathExpression inner;
 		private readonly MethodInfo _getter;
@@ -21,7 +21,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			_indices = indices;
 		}
 
-		public bool Writable => _setter != null;
+		public override bool Writable => _setter != null;
 
 		public object Context
 		{
@@ -29,9 +29,9 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			set;
 		}
 
-		public object Source => Context;
+		public override object Source => Context;
 
-		public PropertyPath ToPropertyPath()
+		public override PropertyPath ToPropertyPath()
 		{
 			var innerPath = inner.ToPropertyPath();
 			var innerParameters = innerPath.PathParameters;
@@ -41,7 +41,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			return new PropertyPath(path, allParameters);
 		}
 
-		public object Evaluate(object parameter)
+		public override object Evaluate(object parameter)
 		{
 			var indexed = inner.Evaluate(parameter);
 			if (indexed == null)
