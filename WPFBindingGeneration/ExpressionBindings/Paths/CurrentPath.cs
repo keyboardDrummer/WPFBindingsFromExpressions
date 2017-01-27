@@ -21,7 +21,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		{
 			var innerPath = inner.ToPropertyPath();
 			var innerString = innerPath.Path;
-			return new PropertyPath(string.IsNullOrEmpty(innerString) ? "" : innerString + "/", innerPath.PathParameters?.ToArray());
+			return new PropertyPath(innerString + "/", innerPath.PathParameters?.ToArray());
 		}
 
 		public override object Evaluate(object parameter)

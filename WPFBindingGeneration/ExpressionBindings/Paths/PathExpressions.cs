@@ -24,51 +24,13 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			var callExpression = expression as MethodCallExpression;
 			if (callExpression != null)
 			{
-				var callExpressionMethod = callExpression.Method;
-				var methodInfo = callExpressionMethod.IsGenericMethod ? callExpressionMethod.GetGenericMethodDefinition() : callExpressionMethod;
-				if (methodInfo == CurrentMethod)
-				{
-					var inner = ParsePath(callExpression.Arguments[0]);
-					if (inner == null)
-					{
-						return null;
-					}
-					else
-					{
-						return new CurrentPath(inner);
-					}
-				}
-
-				if (callExpressionMethod.Name == "get_Item")
-				{
-					var inner = ParsePath(callExpression.Object);
-					if (inner == null)
-					{
-						return null;
-					}
-					var getter = callExpressionMethod;
-					var setter = getter.DeclaringType.GetProperties().Single(p => p.GetGetMethod().Equals(getter)).GetSetMethod();
-					var indices = callExpression.Arguments.Select(argument => Expression.Lambda(argument).Compile().DynamicInvoke()).ToArray();
-					return new IndexPath(inner, getter, setter, indices);
-				}
+				return ParseMethodCall(callExpression);
 			}
 
 			var memberExpression = expression as MemberExpression;
 			if (memberExpression != null)
 			{
-				var propertyInfo = memberExpression.Member as PropertyInfo;
-				if (propertyInfo == null)
-				{
-					return new ContextReference(Expression.Lambda(memberExpression).Compile().DynamicInvoke());
-					//throw new ArgumentException("Access must be a property, and not a field.");	
-				}
-				if (propertyInfo.GetMethod.IsStatic)
-				{
-					return new ContextReference(propertyInfo.GetValue(null)); //Sure I want to evaluate now?
-				}
-
-				var recursive = ParsePath(memberExpression.Expression);
-				return recursive == null ? null : new PropertyAccess(propertyInfo, recursive);
+				return ParseMember(memberExpression);
 			}
 
 			var parameterExpression = expression as ParameterExpression;
@@ -78,11 +40,60 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			}
 
 			var value = expression as ConstantExpression;
-			if (value != null)
+			if (value != null && value.Value != null && value.Type.IsClass)
 			{
 				return new ContextReference(value.Value);
 			}
 			return null;
+		}
+
+		private static IPathExpression ParseMember(MemberExpression memberExpression)
+		{
+			var propertyInfo = memberExpression.Member as PropertyInfo;
+			if (propertyInfo == null)
+			{
+				return new ContextReference(Expression.Lambda(memberExpression).Compile().DynamicInvoke());
+				//throw new ArgumentException("Access must be a property, and not a field.");	
+			}
+			if (propertyInfo.GetMethod.IsStatic)
+			{
+				return new ContextReference(propertyInfo.GetValue(null)); //Sure I want to evaluate now?
+			}
+
+			var recursive = ParsePath(memberExpression.Expression);
+			return recursive == null ? null : new PropertyAccess(propertyInfo, recursive);
+		}
+
+		private static IPathExpression ParseMethodCall(MethodCallExpression callExpression)
+		{
+			var callExpressionMethod = callExpression.Method;
+			var methodInfo = callExpressionMethod.IsGenericMethod ? callExpressionMethod.GetGenericMethodDefinition() : callExpressionMethod;
+			if (methodInfo == CurrentMethod)
+			{
+				var inner = ParsePath(callExpression.Arguments[0]);
+				return inner == null ? null : new CurrentPath(inner);
+			}
+			else if (callExpressionMethod.Name == "get_Item")
+			{
+				return ParseIndexerCall(callExpression, callExpressionMethod);
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		private static IPathExpression ParseIndexerCall(MethodCallExpression callExpression, MethodInfo callExpressionMethod)
+		{
+			var inner = ParsePath(callExpression.Object);
+			if (inner == null)
+			{
+				return null;
+			}
+			var getter = callExpressionMethod;
+			var setter = getter.DeclaringType.GetProperties().Single(p => p.GetGetMethod().Equals(getter)).GetSetMethod();
+			var indices = callExpression.Arguments.Select(argument => Expression.Lambda(argument).Compile().DynamicInvoke()).ToArray();
+			return new IndexPath(inner, getter, setter, indices);
 		}
 	}
 }
