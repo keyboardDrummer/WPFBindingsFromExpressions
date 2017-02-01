@@ -1,9 +1,15 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
 	abstract class PathExpression : IPathExpression
 	{
+		public abstract Type Type
+		{
+			get;
+		}
+
 		public abstract bool Writable
 		{
 			get;
@@ -28,6 +34,11 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 	/// </summary>
 	public interface IPathExpression
 	{
+		Type Type
+		{
+			get;
+		}
+
 		bool Writable
 		{
 			get;

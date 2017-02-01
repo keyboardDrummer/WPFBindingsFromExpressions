@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
@@ -11,6 +12,8 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		{
 			this.parameterExpression = parameterExpression;
 		}
+
+		public override Type Type => parameterExpression.Type;
 
 		public override bool Writable => false;
 

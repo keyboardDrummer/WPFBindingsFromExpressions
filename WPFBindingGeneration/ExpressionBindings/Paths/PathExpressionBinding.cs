@@ -6,23 +6,21 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
 	public class PathExpressionBinding<From, To> : DefaultExpressionBinding<From, To>
 	{
-		private readonly IPathExpression func;
-
 		public PathExpressionBinding(IPathExpression func)
 		{
-			this.func = func;
+			this.Path = func;
 		}
 
-		public override bool IsWritable => GetPath().Writable;
+		public override bool IsWritable => Path.Writable;
 
 		private object GetSource()
 		{
-			return GetPath().Source;
+			return Path.Source;
 		}
 
 		public override To Evaluate(From @from)
 		{
-			var obj = GetPath().Evaluate(from);
+			var obj = Path.Evaluate(from);
 			if (obj == null)
 			{
 				return default(To);
@@ -33,7 +31,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		public Binding ToBinding()
 		{
-			var path = GetPath().ToPropertyPath();
+			var path = Path.ToPropertyPath();
 			var result = new Binding();
 			if (!string.IsNullOrEmpty(path.Path))
 			{
@@ -54,9 +52,9 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			return ToBinding();
 		}
 
-		private IPathExpression GetPath()
+		public IPathExpression Path
 		{
-			return func;
+			get;
 		}
 
 		public override IExpressionBinding<From, NewTo> Convert<NewTo>(Func<To, NewTo> forward = null, Func<NewTo, To> backward = null)

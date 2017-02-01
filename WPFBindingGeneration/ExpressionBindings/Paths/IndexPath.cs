@@ -21,6 +21,8 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			_indices = indices;
 		}
 
+		public override Type Type => _getter.ReturnType;
+
 		public override bool Writable => _setter != null;
 
 		public object Context

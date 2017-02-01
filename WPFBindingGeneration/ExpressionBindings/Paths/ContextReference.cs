@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
@@ -13,6 +14,8 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		{
 			get;
 		}
+
+		public override Type Type => Context.GetType();
 
 		public override bool Writable => false;
 

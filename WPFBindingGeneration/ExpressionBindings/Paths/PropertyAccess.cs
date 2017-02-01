@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 
@@ -18,6 +19,8 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		{
 			get;
 		}
+
+		public override Type Type => Property.PropertyType;
 
 		public override bool Writable => Property.GetSetMethod(false) != null;
 

@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace WPFBindingGeneration.ExpressionFunc
 {
-	class ReplaceParameter : ExpressionVisitor
+	public class ReplaceParameter : ExpressionVisitor
 	{
 		readonly ParameterExpression from;
 		readonly Expression to;

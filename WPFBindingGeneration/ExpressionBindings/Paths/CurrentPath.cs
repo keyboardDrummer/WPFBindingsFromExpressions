@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 
@@ -12,6 +13,8 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		{
 			this.inner = inner;
 		}
+
+		public override Type Type => inner.Type.GetGenericArguments()[0];
 
 		public override bool Writable => false;
 
