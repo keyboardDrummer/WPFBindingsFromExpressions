@@ -1,34 +1,28 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Windows;
 using System.Windows.Data;
 
 namespace WPFBindingGeneration.ExpressionBindings.Converters
 {
 	class MultiValueConverterFromDelegate<To> : IMultiValueConverter
 	{
+		private readonly Type[] _types;
 		readonly Func<object[], To> converter;
 
-		public MultiValueConverterFromDelegate(Func<object[], To> converter)
+		public MultiValueConverterFromDelegate(Type[] types, Func<object[], To> converter)
 		{
+			_types = types;
 			this.converter = converter;
 		}
 
 		public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (values.All(x => x == DependencyProperty.UnsetValue))
+			for (int index = 0; index < _types.Length; index++)
 			{
-				return DependencyProperty.UnsetValue;
-			}
-			ISet<int> nulledElements = new HashSet<int>(); //TODO remove this debug info.
-			for (int i = 0; i < values.Length; i++)
-			{
-				if (values[i] == DependencyProperty.UnsetValue)
-			{
-					values[i] = null;
-					nulledElements.Add(i);
+				var type = _types[index];
+				if (!type.IsInstanceOfType(values[index]))
+				{
+					return default(To);
 				}
 			}
 			return converter(values);
