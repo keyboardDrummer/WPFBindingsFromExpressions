@@ -71,14 +71,6 @@ namespace WPFBindingGeneration
 				return new MultiPathExpressionBinding<From, To>(paths, converter, null);
 			}
 		}
-		public static dynamic GetDefault(Type type)
-		{
-			if (type.IsValueType)
-			{
-				return Activator.CreateInstance(type);
-			}
-			return null;
-		}
 
 		/// <summary>
 		/// Returns an updated expression with all the paths replaced by parameters.
