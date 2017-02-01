@@ -18,7 +18,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Converters
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (value == DependencyProperty.UnsetValue || (value != null && !(value is T)))
+			if (value == DependencyProperty.UnsetValue || !(value is T))
 			{
 				return DependencyProperty.UnsetValue;
 			}

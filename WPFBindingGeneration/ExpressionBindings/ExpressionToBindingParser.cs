@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using WPFBindingGeneration.ExpressionBindings;
 using WPFBindingGeneration.ExpressionBindings.Paths;
+using WPFBindingGeneration.ExpressionFunc;
 
 namespace WPFBindingGeneration
 {
@@ -33,6 +35,7 @@ namespace WPFBindingGeneration
 			return OneWay(Expression.Lambda<Func<Unit, To>>(func.Body, Expression.Parameter(typeof(Unit))));
 		}
 
+
 		public static IExpressionBinding<From, To> OneWay<From, To>(Expression<Func<From, To>> func)
 		{
 			var result = ExtractPaths(func.Body);
@@ -41,14 +44,19 @@ namespace WPFBindingGeneration
 			var extraInformation = Tuple.Create(result, func);
 			if (paths.Count == 1)
 			{
-				var objectParameter = Expression.Parameter(typeof(object));
-				var newBody = result.CreateExpression((path, type) => Expression.Convert(objectParameter, type));
-				if (IsEndPoint(newBody, objectParameter))
+				var pathExpression = paths[0];
+				var pathParameter = Expression.Parameter(pathExpression.Type);
+
+				var newBody = result.CreateExpression((path, type) => pathParameter);
+				if (newBody == pathParameter)
 				{
-					return new PathExpressionBinding<From, To>(paths[0]);
+					return new PathExpressionBinding<From, To>(pathExpression);
 				}
-				var pathBinding = new PathExpressionBinding<From, object>(paths[0]);
-				var converter = Expression.Lambda<Func<object, To>>(newBody, objectParameter).DebugCompile(extraInformation);
+				var pathExpressionBindingType = typeof(PathExpressionBinding<,>).MakeGenericType(typeof(From), pathExpression.Type);
+				var constructor = pathExpressionBindingType.GetConstructor(new[] {typeof(IPathExpression)});
+				dynamic pathBinding = constructor.Invoke(new object[] {pathExpression});
+				dynamic lambda = Expression.Lambda(newBody, pathParameter);
+				dynamic converter = ExpressionTreeExtensions.DebugCompile(lambda, extraInformation);
 				return pathBinding.Convert(converter);
 			}
 			else
@@ -58,21 +66,18 @@ namespace WPFBindingGeneration
 					ToDictionary(t => t.Item1, t => t.Item2, ExtractPathResult<Expression>.Comparer);
 
 				var arrayParameterBody = result.CreateExpression((path, type) => GetArrayParameter(arrayParameter, pathIndices[path], type));
-
+				
 				var converter = Expression.Lambda<Func<object[], To>>(arrayParameterBody, arrayParameter).DebugCompile(extraInformation);
 				return new MultiPathExpressionBinding<From, To>(paths, converter, null);
 			}
 		}
-
-		private static bool IsEndPoint(Expression body, Expression parameter)
+		public static dynamic GetDefault(Type type)
 		{
-			if (body.NodeType != ExpressionType.Convert)
+			if (type.IsValueType)
 			{
-				return false;
+				return Activator.CreateInstance(type);
 			}
-
-			var index = (UnaryExpression)body;
-			return index.Operand == parameter;
+			return null;
 		}
 
 		/// <summary>
@@ -86,6 +91,13 @@ namespace WPFBindingGeneration
 				return new ExtractPathResult<Expression>(p => constant);
 			}
 
+			var unaryExpression = expression as UnaryExpression;
+			if (unaryExpression != null)
+			{
+				var operandResult = ExtractPaths(unaryExpression.Operand);
+				return operandResult.Select(operand => (Expression)Expression.MakeUnary(unaryExpression.NodeType, operand, unaryExpression.Type, unaryExpression.Method));
+			}
+
 			var path = PathExpressions.ParsePath(expression);
 			if (path != null)
 			{
@@ -96,12 +108,6 @@ namespace WPFBindingGeneration
 			if (binaryExpression != null)
 			{
 				return ParseBinary(binaryExpression);
-			}
-			var unaryExpression = expression as UnaryExpression;
-			if (unaryExpression != null)
-			{
-				var operandResult = ExtractPaths(unaryExpression.Operand);
-				return operandResult.Select(operand => (Expression)Expression.MakeUnary(unaryExpression.NodeType, operand, unaryExpression.Type, unaryExpression.Method));
 			}
 			var methodCall = expression as MethodCallExpression;
 			if (methodCall != null)
@@ -129,6 +135,12 @@ namespace WPFBindingGeneration
 			if (binaryType != null)
 			{
 				return ParseBinaryType(binaryType);
+			}
+
+			var defaultExpression = expression as DefaultExpression;
+			if (defaultExpression != null)
+			{
+				return new ExtractPathResult<Expression>(p => defaultExpression);
 			}
 			throw new NotImplementedException();
 		}

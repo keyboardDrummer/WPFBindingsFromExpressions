@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Windows.Data;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
