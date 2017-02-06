@@ -5,8 +5,9 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
 	class ContextReference : PathExpression
 	{
-		public ContextReference(object context)
+		public ContextReference(object context, Type type)
 		{
+			Type = type;
 			Context = context;
 		}
 
@@ -15,7 +16,10 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			get;
 		}
 
-		public override Type Type => Context.GetType();
+		public override Type Type
+		{
+			get;
+		}
 
 		public override bool Writable => false;
 
@@ -29,6 +33,11 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		public override object Evaluate(object parameter)
 		{
 			return Context;
+		}
+
+		public override void Write(object @from, object newTo)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }

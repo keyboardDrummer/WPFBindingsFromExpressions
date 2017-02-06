@@ -33,7 +33,7 @@ namespace WPFBindingGeneration.ExpressionFunc
 			return new ContextualExpression<TFrom, TNewTo>(newTree);
 		}
 
-		IExpressionBinding IExpressionFunction<TTo>.ExpressionBinding => ExpressionBinding;
+		IExpressionBinding<TTo> IExpressionFunction<TTo>.ExpressionBinding => ExpressionBinding;
 
 		IExpressionFunction<TNewTo> IExpressionFunction<TTo>.Convert<TNewTo>(Func<TTo, TNewTo> func)
 		{

@@ -3,11 +3,11 @@ using System.Windows.Data;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-	public class PathExpressionBinding<From, To> : DefaultExpressionBinding<From, To>
+	public class PathExpressionBinding<TFrom, TTo> : DefaultExpressionBinding<TFrom, TTo>
 	{
 		public PathExpressionBinding(IPathExpression func)
 		{
-			this.Path = func;
+			Path = func;
 		}
 
 		public override bool IsWritable => Path.Writable;
@@ -17,15 +17,20 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			return Path.Source;
 		}
 
-		public override To Evaluate(From @from)
+		public override TTo Evaluate(TFrom @from)
 		{
 			var obj = Path.Evaluate(from);
 			if (obj == null)
 			{
-				return default(To);
+				return default(TTo);
 			}
 
-			return (To)obj;
+			return (TTo)obj;
+		}
+
+		public override void Write(TFrom @from, TTo newTo)
+		{
+			Path.Write(from, newTo);
 		}
 
 		public Binding ToBinding()
@@ -56,9 +61,9 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			get;
 		}
 
-		public override IExpressionBinding<From, NewTo> Convert<NewTo>(Func<To, NewTo> forward = null, Func<NewTo, To> backward = null)
+		public override IExpressionBinding<TFrom, NewTo> Convert<NewTo>(Func<TTo, NewTo> forward = null, Func<NewTo, TTo> backward = null)
 		{
-			return new ConvertedPathExpressionBinding<From, To, NewTo>(this, forward, backward);
+			return new ConvertedPathExpressionBinding<TFrom, TTo, NewTo>(this, forward, backward);
 		}
 	}
 }

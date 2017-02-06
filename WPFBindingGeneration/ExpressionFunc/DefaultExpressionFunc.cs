@@ -10,7 +10,7 @@ namespace WPFBindingGeneration.ExpressionFunc
 		public abstract LambdaExpression ExpressionTree { get; }
 		public abstract Type ContextType { get; }
 		public abstract IExpressionFunction<TNewTo> Convert<TNewTo>(Func<TTo, TNewTo> func);
-		IExpressionBinding IExpressionFunction<TTo>.ExpressionBinding => ExpressionBinding;
+		IExpressionBinding<TTo> IExpressionFunction<TTo>.ExpressionBinding => ExpressionBinding;
 		public abstract IExpressionBinding<TFrom, TTo> ExpressionBinding { get; }
 	}
 }

@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-	class Parameter : PathExpression
+	public class Parameter : PathExpression
 	{
 		private readonly ParameterExpression parameterExpression;
 
@@ -27,6 +27,11 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		public override object Evaluate(object parameter)
 		{
 			return parameter;
+		}
+
+		public override void Write(object @from, object newTo)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }

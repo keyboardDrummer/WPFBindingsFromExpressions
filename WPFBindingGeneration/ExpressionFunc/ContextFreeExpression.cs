@@ -24,7 +24,7 @@ namespace WPFBindingGeneration.ExpressionFunc
 			return new ContextFreeExpression<TNewTo>(newTree);
 		}
 		
-		public IExpressionBinding ExpressionBinding => ExpressionToBindingParser.OneWay(tree);
+		public IExpressionBinding<TTo> ExpressionBinding => ExpressionToBindingParser.OneWay(tree);
 
 		public TTo Evaluate()
 		{

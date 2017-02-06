@@ -42,7 +42,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			var value = expression as ConstantExpression;
 			if (value != null && value.Value != null && value.Type.IsClass)
 			{
-				return new ContextReference(value.Value);
+				return new ContextReference(value.Value, value.Type);
 			}
 			return null;
 		}
@@ -52,12 +52,12 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 			var propertyInfo = memberExpression.Member as PropertyInfo;
 			if (propertyInfo == null)
 			{
-				return new ContextReference(Expression.Lambda(memberExpression).Compile().DynamicInvoke());
+				return new ContextReference(Expression.Lambda(memberExpression).Compile().DynamicInvoke(), memberExpression.Type);
 				//throw new ArgumentException("Access must be a property, and not a field.");	
 			}
 			if (propertyInfo.GetMethod.IsStatic)
 			{
-				return new ContextReference(propertyInfo.GetValue(null)); //Sure I want to evaluate now?
+				return new ContextReference(propertyInfo.GetValue(null), memberExpression.Type); //Sure I want to evaluate now?
 			}
 
 			var recursive = ParsePath(memberExpression.Expression);

@@ -25,6 +25,11 @@ namespace WPFBindingGeneration.ExpressionBindings
 			return forward(pathExpression.Evaluate(from));
 		}
 
+		public override void Write(From @from, To newTo)
+		{
+			pathExpression.Write(from, backward(newTo));
+		}
+
 		public override BindingBase ToBindingBase()
 		{
 			var result = pathExpression.ToBinding();

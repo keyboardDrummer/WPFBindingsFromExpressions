@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-	class IndexPath : PathExpression
+	public class IndexPath : PathExpression
 	{
 		private readonly IPathExpression inner;
 		private readonly MethodInfo _getter;
@@ -51,6 +51,12 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 				return null;
 			}
 			return _getter.Invoke(indexed, _indices);
+		}
+
+		public override void Write(object @from, object newTo)
+		{
+			var indexed = inner.Evaluate(@from);
+			_setter.Invoke(indexed, _indices.Concat(new [] { newTo}).ToArray());
 		}
 	}
 }

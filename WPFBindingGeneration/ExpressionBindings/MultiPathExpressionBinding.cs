@@ -36,6 +36,11 @@ namespace WPFBindingGeneration.ExpressionBindings
 			return forward(pathValues.ToArray());
 		}
 
+		public override void Write(From @from, To newTo)
+		{
+			throw new NotSupportedException();
+		}
+
 		public override BindingBase ToBindingBase()
 		{
 			return ToBinding();

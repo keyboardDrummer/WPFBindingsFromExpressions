@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-	abstract class PathExpression : IPathExpression
+	public abstract class PathExpression : IPathExpression
 	{
 		public abstract Type Type
 		{
@@ -22,6 +22,7 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		public abstract PropertyPath ToPropertyPath();
 		public abstract object Evaluate(object parameter);
+		public abstract void Write(object @from, object newTo);
 
 		public override string ToString()
 		{
@@ -52,5 +53,6 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		PropertyPath ToPropertyPath();
 
 		object Evaluate(object parameter);
+		void Write(object @from, object newTo);
 	}
 }

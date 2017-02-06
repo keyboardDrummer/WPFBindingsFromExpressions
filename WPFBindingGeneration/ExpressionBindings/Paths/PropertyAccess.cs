@@ -5,14 +5,17 @@ using System.Windows;
 
 namespace WPFBindingGeneration.ExpressionBindings.Paths
 {
-	class PropertyAccess : PathExpression
+	public class PropertyAccess : PathExpression
 	{
-		private readonly IPathExpression inner;
-
 		public PropertyAccess(PropertyInfo property, IPathExpression inner)
 		{
 			this.Property = property;
-			this.inner = inner;
+			this.Inner = inner;
+		}
+
+		public IPathExpression Inner
+		{
+			get;
 		}
 
 		public PropertyInfo Property
@@ -24,26 +27,31 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 
 		public override bool Writable => Property.GetSetMethod(false) != null;
 
-		public override object Source => inner.Source;
+		public override object Source => Inner.Source;
 
 		public override PropertyPath ToPropertyPath()
 		{
-			var innerPath = inner.ToPropertyPath();
+			var innerPath = Inner.ToPropertyPath();
 			var innerString = innerPath.Path;
-			var separator = string.IsNullOrEmpty(innerString) || inner is CurrentPath ? "" : ".";
+			var separator = string.IsNullOrEmpty(innerString) || Inner is CurrentPath ? "" : ".";
 			var prefix = innerString + separator;
 			return new PropertyPath(prefix + Property.Name, innerPath.PathParameters?.ToArray());
 		}
 
 		public override object Evaluate(object parameter)
 		{
-			var innerValue = inner.Evaluate(parameter);
+			var innerValue = Inner.Evaluate(parameter);
 			if (innerValue == null)
 			{
 				return null;
 			}
 
 			return Property.GetValue(innerValue);
+		}
+
+		public override void Write(object @from, object newTo)
+		{
+			Property.SetValue(Inner.Evaluate(from), newTo);
 		}
 	}
 }

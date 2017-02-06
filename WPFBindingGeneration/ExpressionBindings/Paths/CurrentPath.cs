@@ -31,5 +31,10 @@ namespace WPFBindingGeneration.ExpressionBindings.Paths
 		{
 			return ((IEnumerable<object>)inner.Evaluate(parameter)).Current();
 		}
+
+		public override void Write(object @from, object newTo)
+		{
+			throw new NotSupportedException();
+		}
 	}
 }
